@@ -14,9 +14,9 @@ class PromotionCategory(models.Model):
 
 class Promotion(models.Model):
     PROMOTION_CHOISES = (
-        ('DISCOUNT', 'Скидка'),
-        ('BONUS', 'Бонус'),
-        ('CERTIFICATE', 'Сертификат')
+        ('discount', 'Скидка'),
+        ('bonus', 'Бонус'),
+        ('certificate', 'Сертификат')
     )
     category = models.ForeignKey(PromotionCategory, null=True, blank=True,
                                  on_delete=models.CASCADE, related_name='category')
@@ -30,6 +30,7 @@ class Promotion(models.Model):
     work_time = models.CharField(max_length=25, null=True)
     address = models.CharField(max_length=85)
     likes = models.ManyToManyField(MyUser, related_name='liked_promotions')
+    # created_date = models.DateTimeField(auto_now_add=True)
 
 
 class Like(models.Model):

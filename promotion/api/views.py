@@ -4,6 +4,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework import views
 from rest_framework import filters
+from django_filters.rest_framework import DjangoFilterBackend
 from promotion.models import PromotionCategory, Promotion, Like
 from .serializers import PromotionCategorySerializer, PromotionSerializer, LikeSerializer
 # Create your views here.
@@ -29,6 +30,8 @@ class PromotionListAPIView(generics.ListCreateAPIView):
     permission_classes = [IsAuthenticated]
     filter_backends = [filters.SearchFilter]
     search_fields = ['title', 'description', 'type', 'address']
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = ['category', 'type', 'discount']
 
 
 class PromotionDetailAPIView(generics.RetrieveDestroyAPIView):
