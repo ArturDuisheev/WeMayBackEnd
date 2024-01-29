@@ -13,10 +13,10 @@ class PromotionCategory(models.Model):
 
 
 class Promotion(models.Model):
-    PROMOTION_CHOISES = (
-        ('discount', 'Скидка'),
-        ('bonus', 'Бонус'),
-        ('certificate', 'Сертификат')
+    PROMOTION_CHOICES = (
+        ('Discount', 'Скидка'),
+        ('Bonus', 'Бонус'),
+        ('Certificate', 'Сертификат')
     )
     category = models.ForeignKey(PromotionCategory, null=True, blank=True,
                                  on_delete=models.CASCADE, related_name='category')
@@ -25,7 +25,7 @@ class Promotion(models.Model):
     old_price = models.PositiveIntegerField()
     discount = models.PositiveIntegerField(null=True)
     description = models.TextField()
-    type = models.CharField(max_length=45, choices=PROMOTION_CHOISES, default='DISCOUNT')
+    type = models.CharField(max_length=45, choices=PROMOTION_CHOICES, default=PROMOTION_CHOICES[0][0])
     contacts = models.CharField(max_length=45)
     work_time = models.CharField(max_length=25, null=True)
     address = models.CharField(max_length=85)
@@ -33,9 +33,9 @@ class Promotion(models.Model):
     # created_date = models.DateTimeField(auto_now_add=True)
 
 
-class Like(models.Model):
-    user = models.ForeignKey(MyUser, on_delete=models.CASCADE)
-    promotion = models.ForeignKey(Promotion, on_delete=models.CASCADE)
-
-    class Meta:
-        unique_together = ['user', 'promotion']
+# class Like(models.Model):
+#     user = models.ForeignKey(MyUser, on_delete=models.CASCADE)
+#     promotion = models.ForeignKey(Promotion, on_delete=models.CASCADE)
+#
+#     class Meta:
+#         unique_together = ['user', 'promotion']

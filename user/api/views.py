@@ -7,49 +7,46 @@ from rest_framework.response import Response
 from rest_framework import status
 
 from django.db import utils as django_utils
-from user.api import serializers as ser
-from user.models import MyUser
-
-
-# Create your views here.
+from user.api.serializers import RegisterSerializer, LogInSerializer
 
 
 class RegisterAPIView(APIView):
     def post(self, request):
-        serializer = ser.RegisterSerializer(data=request.data)
+        serializer = RegisterSerializer(data=request.data)
         try:
-            if serializer.is_valid():
-                serializer.save()
-                return Response({"message": "Вы успешно зарегестрировались!"}, status=status.HTTP_201_CREATED)
-        except Exception as e:
-            print(f'ошибочка: {e}')
-            return Response({'message': 'Оишбочка в реге'})
+            if not serializer.is_valid():
+                return Response({'message': 'Неверный формат электронной почты'})
+            serializer.save()
+            return Response({"message": "Вы успешно зарегистрировались!"}, status=status.HTTP_201_CREATED)
         except django_utils.IntegrityError:
-            return Response({'error': 'Харош, придумай другой email'}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({'error': 'Неверный email'}, status=status.HTTP_400_BAD_REQUEST)
+        except Exception as e:
+            # print(f'Ошибка: {e}')
+            return Response({'message': 'Ошибка при регистрации'})
 
 
 class LogInView(APIView):
     def post(self, request):
-        serializer = ser.LogInSerializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        print(f"Serializer data: {serializer.validated_data}")
+        serializer = LogInSerializer(data=request.data)
+        if not serializer.is_valid():
+            return Response({'message': 'Неверный формат электронной почты'})
+
         user = authenticate(**serializer.validated_data)
-        print(user)
-        if user:
-            login(request, user)
-            access_token = AccessToken.for_user(user)
-            refresh_token = RefreshToken.for_user(user)
 
-            print(f"Access Token: {access_token}")
-            print(f"Refresh Token: {refresh_token}")
-
-            return Response(data={"message": "Вход в систему выполнен успешно",
-                                  "access": str(access_token),
-                                  "refresh": str(refresh_token),
-                                  }
-                            )
-        else:
+        if not user:
             return Response({'detail': 'Неверные данные, попробуйте ещё раз!'}, status=status.HTTP_400_BAD_REQUEST)
+
+        login(request, user)
+        access_token = AccessToken.for_user(user)
+        refresh_token = RefreshToken.for_user(user)
+
+        print(f'Access Token: {access_token}')
+        print(f'Refresh Token: {refresh_token}')
+
+        return Response(data={'message': 'Вход в систему выполнен успешно',
+                              'access': str(access_token),
+                              'refresh': str(refresh_token),
+                              })
 
 
 class LogoutView(APIView):
@@ -59,4 +56,4 @@ class LogoutView(APIView):
         # Perform logout
         logout(request)
 
-        return Response({'message': 'Successfully logged out.'}, status=status.HTTP_200_OK)
+        return Response({'message': 'Выход из системы выполнен успешно.'}, status=status.HTTP_200_OK)

@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from promotion.models import PromotionCategory, Promotion, Like
+from promotion.models import PromotionCategory, Promotion
 
 
 class PromotionCategorySerializer(serializers.ModelSerializer):
@@ -13,8 +13,13 @@ class PromotionSerializer(serializers.ModelSerializer):
         model = Promotion
         fields = '__all__'
 
+    def to_representation(self, instance):
+        representation = super().to_representation(instance)
+        representation["category"] = instance.category.name
+        return representation
 
-class LikeSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Like
-        fields = ['id', 'user', 'promotion']
+# class LikeSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = Promotion.likes.model
+#         fields = ['id', 'user', 'promotion']
+#         fields = '__all__'

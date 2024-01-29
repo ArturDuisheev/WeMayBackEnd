@@ -1,12 +1,11 @@
-from django.shortcuts import render
 from rest_framework import generics, status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework import views
 from rest_framework import filters
 from django_filters.rest_framework import DjangoFilterBackend
-from promotion.models import PromotionCategory, Promotion, Like
-from .serializers import PromotionCategorySerializer, PromotionSerializer, LikeSerializer
+from promotion.models import PromotionCategory, Promotion
+from .serializers import PromotionCategorySerializer, PromotionSerializer
 # Create your views here.
 
 
@@ -28,9 +27,9 @@ class PromotionListAPIView(generics.ListCreateAPIView):
     queryset = Promotion.objects.all()
     serializer_class = PromotionSerializer
     permission_classes = [IsAuthenticated]
-    filter_backends = [filters.SearchFilter]
+    filter_backends = [filters.SearchFilter, DjangoFilterBackend]
     search_fields = ['title', 'description', 'type', 'address']
-    filter_backends = [DjangoFilterBackend]
+    # filter_backends = [DjangoFilterBackend]
     filterset_fields = ['category', 'type', 'discount']
 
 
@@ -43,40 +42,51 @@ class PromotionDetailAPIView(generics.RetrieveDestroyAPIView):
 class LikeCounterView(views.APIView):
     permission_classes = [IsAuthenticated]
 
-    def get(self, request, id, pk, like_pk):
+    def get(self, request, id, pk):
+        promotion = Promotion.objects.filter(category_id=id, pk=pk).first()
+
+        if not promotion:
+            return Response({'detail': 'Акция не найдена'}, status=status.HTTP_404_NOT_FOUND)
+
         # Retrieve the count of likes for the specified promotion
-        promotion = Promotion.objects.filter(pk=like_pk).first()
+        Like = promotion.likes.through
+        like_count = Like.objects.count()
 
-        if promotion:
-            like_count = Like.objects.filter(promotion=promotion).count()
-            data = {'count': like_count}
-            serializer = LikeSerializer(data=data)
-            serializer.is_valid()
-            return Response(serializer.data, status=status.HTTP_200_OK)
-        else:
-            return Response({'detail': 'Promotion not found'}, status=status.HTTP_404_NOT_FOUND)
+        return Response({'count': like_count}, status=status.HTTP_200_OK)
 
-    def post(self, request, promotion_id):
-        # Check if the user has already liked the promotion
+    def post(self, request, id, pk):
         user = self.request.user
-        if Like.objects.filter(user=user, promotion_id=promotion_id).exists():
-            return Response({'message': 'already liked'},
+        promotion = Promotion.objects.filter(category_id=id, pk=pk).first()
+
+        if not promotion:
+            return Response({'detail': 'Акция не найдена'}, status=status.HTTP_404_NOT_FOUND)
+
+        Like = promotion.likes.through
+        current_like = Like.objects.filter(myuser_id=user.id)
+
+        # Check if current user has already liked the promotion
+        if current_like.exists():
+            return Response({'message': 'Вы уже поставил лайк на эту акцию'},
                             status=status.HTTP_400_BAD_REQUEST)
 
-        # Create a new like
-        like_data = {'user': user.id, 'promotion': promotion_id}
-        serializer = LikeSerializer(data=like_data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        current_like.create(promotion_id=promotion.id, myuser_id=user.id)
+        like_count = current_like.count()
 
-    def delete(self, request, promotion_id):
+        return Response({'message': 'Добавлено в \'Понравившиися акции\'', 'count': like_count})
+
+    def delete(self, request, id, pk):
         # Check if the user has already liked the promotion
         user = self.request.user
-        try:
-            like = Like.objects.get(user=user, promotion_id=promotion_id)
-            like.delete()
-            return Response(status=status.HTTP_204_NO_CONTENT)
-        except Like.DoesNotExist:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
+        promotion = Promotion.objects.filter(category_id=id, pk=pk).first()
+
+        if not promotion:
+            return Response({'detail': 'Акция не найдена'}, status=status.HTTP_404_NOT_FOUND)
+
+        # Get the intermediate table and get the current user's like
+        Like = promotion.likes.through
+        current_like = Like.objects.filter(myuser_id=user.id)
+
+        if not current_like:
+            return Response({'message': 'Вы уже удалили лайк'})
+        current_like.delete()
+        return Response({'message': 'Лайк удален'})

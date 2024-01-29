@@ -7,7 +7,14 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # Production
 PRODUCTION = env("PRODUCTION", default=False, cast=bool)
+
 ALLOWED_HOSTS = ['127.0.0.1', 'localhost']
+
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:5173",
+    "https://inai-library.netlify.app",
+    "https://libr2.vercel.app",
+]
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -21,7 +28,12 @@ INSTALLED_APPS = [
     'debug_toolbar',
     'django_filters',
     'user',
-    'promotion'
+    'promotion',
+    'oauth2_provider',
+    'social_django',
+    'drf_social_oauth2',
+    'drf_yasg',
+    'corsheaders',
 ]
 
 MIDDLEWARE = [
@@ -43,9 +55,21 @@ ROOT_URLCONF = 'core.urls'
 AUTH_USER_MODEL = 'user.MyUser'
 
 AUTHENTICATION_BACKENDS = [
+    'social_core.backends.facebook.FacebookAppOAuth2',
+    'social_core.backends.facebook.FacebookOAuth2',
+    'social_core.backends.google.GoogleOAuth2',
+    'drf_social_oauth2.backends.DjangoOAuth2',
     'django.contrib.auth.backends.ModelBackend',
-
 ]
+
+SOCIAL_AUTH_FACEBOOK_KEY = '1865554967282122'
+SOCIAL_AUTH_FACEBOOK_SECRET = '581ade1363f2b24b241f06d4dfc78031'
+
+SOCIAL_AUTH_FACEBOOK_SCOPE = ['email']
+SOCIAL_AUTH_FACEBOOK_PROFILE_EXTRA_PARAMS = {
+    'fields': 'id, name, email'
+}
+SOCIAL_AUTH_USER_FIELDS = ['email', 'username', 'password']
 
 AUTH_PASSWORD_VALIDATORS = [
     {
@@ -64,6 +88,8 @@ AUTH_PASSWORD_VALIDATORS = [
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework_simplejwt.authentication.JWTAuthentication',
+        'oauth2_provider.contrib.rest_framework.OAuth2Authentication',
+        'drf_social_oauth2.authentication.SocialAuthentication',
     ],
     'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend']
 }
@@ -71,7 +97,7 @@ REST_FRAMEWORK = {
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR / 'templates'],  # Define the directory where your templates are stored
+        'DIRS': [os.path.join(BASE_DIR, 'templates')],  # Define the directory where your templates are stored
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -79,6 +105,8 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'social_django.context_processors.backends',
+                'social_django.context_processors.login_redirect',
             ],
         },
     },
