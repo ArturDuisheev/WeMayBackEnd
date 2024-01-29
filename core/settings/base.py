@@ -29,6 +29,7 @@ INSTALLED_APPS = [
     'django_filters',
     'user',
     'promotion',
+    'review',
     'oauth2_provider',
     'social_django',
     'drf_social_oauth2',
