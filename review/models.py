@@ -1,6 +1,5 @@
 from django.db import models
 from user.models import MyUser
-# Create your models here.
 
 
 class Review(models.Model):
