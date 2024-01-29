@@ -2,7 +2,6 @@ from django.contrib.auth import authenticate, logout, login
 
 from rest_framework import permissions
 from rest_framework.views import APIView
-from rest_framework_simplejwt.tokens import RefreshToken, AccessToken
 from rest_framework.response import Response
 from rest_framework import status
 
@@ -20,8 +19,7 @@ class RegisterAPIView(APIView):
             return Response({"message": "Вы успешно зарегистрировались!"}, status=status.HTTP_201_CREATED)
         except django_utils.IntegrityError:
             return Response({'error': 'Неверный email'}, status=status.HTTP_400_BAD_REQUEST)
-        except Exception as e:
-            # print(f'Ошибка: {e}')
+        except Exception:
             return Response({'message': 'Ошибка при регистрации'})
 
 
@@ -37,16 +35,8 @@ class LogInView(APIView):
             return Response({'detail': 'Неверные данные, попробуйте ещё раз!'}, status=status.HTTP_400_BAD_REQUEST)
 
         login(request, user)
-        access_token = AccessToken.for_user(user)
-        refresh_token = RefreshToken.for_user(user)
 
-        print(f'Access Token: {access_token}')
-        print(f'Refresh Token: {refresh_token}')
-
-        return Response(data={'message': 'Вход в систему выполнен успешно',
-                              'access': str(access_token),
-                              'refresh': str(refresh_token),
-                              })
+        return Response(data={'message': 'Вход в систему выполнен успешно'})
 
 
 class LogoutView(APIView):

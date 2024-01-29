@@ -68,7 +68,7 @@ class LikeCounterView(views.APIView):
 
         # Check if current user has already liked the promotion
         if current_like.exists():
-            return Response({'message': 'Вы уже поставил лайк на эту акцию'},
+            return Response({'message': 'Вы уже поставили лайк на эту акцию'},
                             status=status.HTTP_400_BAD_REQUEST)
 
         current_like.create(promotion_id=promotion.id, myuser_id=user.id)
