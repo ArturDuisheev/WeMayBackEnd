@@ -1,3 +1,4 @@
+from django.db.models import Count
 from rest_framework import generics, status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
@@ -24,13 +25,14 @@ class PromotionCategoryDetailAPIView(generics.RetrieveDestroyAPIView):
 
 
 class PromotionListAPIView(generics.ListCreateAPIView):
-    queryset = Promotion.objects.all()
+    # Annotate queryset to sort the promotions by the quantity of their likes
+    queryset = Promotion.objects.annotate(Count('likes')).order_by('-likes__count')
     serializer_class = PromotionSerializer
     permission_classes = [IsAuthenticated]
     filter_backends = [filters.SearchFilter, DjangoFilterBackend]
     search_fields = ['title', 'description', 'type', 'address']
     # filter_backends = [DjangoFilterBackend]
-    filterset_fields = ['category', 'type', 'discount']
+    filterset_fields = ['category', 'type', 'discount', 'likes']
 
 
 class PromotionDetailAPIView(generics.RetrieveDestroyAPIView):

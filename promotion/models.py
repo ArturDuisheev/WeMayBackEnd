@@ -1,9 +1,6 @@
 from django.db import models
-
 from user.models import MyUser
 
-
-# Create your models here.
 
 class PromotionCategory(models.Model):
     title = models.CharField(max_length=30)
@@ -31,11 +28,3 @@ class Promotion(models.Model):
     address = models.CharField(max_length=85)
     likes = models.ManyToManyField(MyUser, related_name='liked_promotions')
     # created_date = models.DateTimeField(auto_now_add=True)
-
-
-# class Like(models.Model):
-#     user = models.ForeignKey(MyUser, on_delete=models.CASCADE)
-#     promotion = models.ForeignKey(Promotion, on_delete=models.CASCADE)
-#
-#     class Meta:
-#         unique_together = ['user', 'promotion']
