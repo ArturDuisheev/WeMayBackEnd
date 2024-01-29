@@ -12,3 +12,5 @@ class Review(models.Model):
     class Meta:
         ordering = ['-created_time']
         db_table = 'review'
+        verbose_name = 'review'
+        verbose_name_plural = 'reviews'

@@ -8,6 +8,11 @@ class PromotionCategory(models.Model):
                                         on_delete=models.CASCADE,
                                         related_name='subcategories')
 
+    class Meta:
+        db_table = 'promotion_category'
+        verbose_name = 'promotion_category'
+        verbose_name_plural = 'promotion_categories'
+
 
 class Promotion(models.Model):
     PROMOTION_CHOICES = (
@@ -28,3 +33,8 @@ class Promotion(models.Model):
     address = models.CharField(max_length=85)
     likes = models.ManyToManyField(MyUser, related_name='liked_promotions')
     # created_date = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        db_table = 'promotion'
+        verbose_name = 'promotion'
+        verbose_name_plural = 'promotions'
