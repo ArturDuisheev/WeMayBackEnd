@@ -18,7 +18,7 @@ class PromotionCategoryListCreateAPIView(generics.ListCreateAPIView):
 class PromotionCategoryDetailAPIView(generics.RetrieveDestroyAPIView):
     queryset = PromotionCategory.objects.all()
     serializer_class = PromotionCategorySerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 
 
 class PromotionListAPIView(generics.ListCreateAPIView):
