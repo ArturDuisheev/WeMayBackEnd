@@ -9,9 +9,11 @@ class PromotionCategorySerializer(serializers.ModelSerializer):
 
 
 class PromotionSerializer(serializers.ModelSerializer):
+    category = serializers.StringRelatedField()
+
     class Meta:
         model = Promotion
-        fields = '__all__'
+        fields = ['category', 'title', 'image', 'old_price', 'discount', 'description', 'type', 'contacts', 'work_time', 'address', 'likes']
 
 
 class LikeSerializer(serializers.ModelSerializer):

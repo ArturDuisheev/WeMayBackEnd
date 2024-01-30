@@ -11,6 +11,9 @@ class PromotionCategory(models.Model):
                                         on_delete=models.CASCADE,
                                         related_name='subcategories')
 
+    def __str__(self):
+        return self.title
+
 
 class Promotion(models.Model):
     PROMOTION_CHOISES = (
@@ -32,6 +35,8 @@ class Promotion(models.Model):
     likes = models.ManyToManyField(MyUser, related_name='liked_promotions')
     # created_date = models.DateTimeField(auto_now_add=True)
 
+    def __str__(self):
+        return self.title
 
 class Like(models.Model):
     user = models.ForeignKey(MyUser, on_delete=models.CASCADE)
