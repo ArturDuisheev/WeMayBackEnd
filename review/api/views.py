@@ -53,7 +53,7 @@ class ReviewDetailAPIView(generics.RetrieveUpdateDestroyAPIView):
 
         return Response(
             {"Сообщение": "У вас нет разрешения на изменение этого отзыва"},
-            status=status.HTTP_403_FORBIDDEN,
+            status=status.HTTP_403_FORBIDDEN
         )
 
     def patch(self, request, *args, **kwargs):
@@ -63,7 +63,7 @@ class ReviewDetailAPIView(generics.RetrieveUpdateDestroyAPIView):
 
         return Response(
             {"Сообщение": "У вас нет разрешения на изменение этого отзыва"},
-            status=status.HTTP_403_FORBIDDEN,
+            status=status.HTTP_403_FORBIDDEN
         )
 
     def delete(self, request, *args, **kwargs):

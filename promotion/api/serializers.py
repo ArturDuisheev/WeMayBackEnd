@@ -3,9 +3,14 @@ from promotion.models import PromotionCategory, Promotion
 
 
 class PromotionCategorySerializer(serializers.ModelSerializer):
+    promotions_count = serializers.SerializerMethodField()
+
     class Meta:
         model = PromotionCategory
-        fields = '__all__'
+        fields = ['id', 'title', 'image', 'parent_category', 'promotions_count']
+
+    def get_promotions_count(self, obj):
+        return Promotion.objects.filter(category=obj).count()
 
 
 class PromotionSerializer(serializers.ModelSerializer):
@@ -17,9 +22,3 @@ class PromotionSerializer(serializers.ModelSerializer):
         representation = super().to_representation(instance)
         representation['category'] = instance.category.title
         return representation
-
-# class LikeSerializer(serializers.ModelSerializer):
-#     class Meta:
-#         model = Promotion.likes.model
-#         fields = ['id', 'user', 'promotion']
-#         fields = '__all__'

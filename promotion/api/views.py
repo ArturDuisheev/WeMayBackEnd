@@ -1,19 +1,16 @@
 from django.db.models import Count
-from rest_framework import generics, status
-from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
-from rest_framework import views
-from rest_framework import filters
+from rest_framework import generics, status, views, filters, permissions
 from django_filters.rest_framework import DjangoFilterBackend
 from promotion.models import PromotionCategory, Promotion
 from .serializers import PromotionCategorySerializer, PromotionSerializer
-# Create your views here.
 
 
-class PromotionCategoryListAPIView(generics.ListCreateAPIView):
+class PromotionCategoryListCreateAPIView(generics.ListCreateAPIView):
     queryset = PromotionCategory.objects.all()
     serializer_class = PromotionCategorySerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+
     filter_backends = [filters.SearchFilter]
     search_fields = ['title']
 
@@ -21,14 +18,15 @@ class PromotionCategoryListAPIView(generics.ListCreateAPIView):
 class PromotionCategoryDetailAPIView(generics.RetrieveDestroyAPIView):
     queryset = PromotionCategory.objects.all()
     serializer_class = PromotionCategorySerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated]
 
 
 class PromotionListAPIView(generics.ListCreateAPIView):
     # Annotate queryset to sort the promotions by the quantity of their likes
     queryset = Promotion.objects.annotate(Count('likes')).order_by('-likes__count')
     serializer_class = PromotionSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+
     filter_backends = [filters.SearchFilter, DjangoFilterBackend]
     search_fields = ['title', 'description', 'type', 'address']
     # filter_backends = [DjangoFilterBackend]
@@ -38,11 +36,11 @@ class PromotionListAPIView(generics.ListCreateAPIView):
 class PromotionDetailAPIView(generics.RetrieveDestroyAPIView):
     queryset = Promotion.objects.all()
     serializer_class = PromotionSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated]
 
 
 class LikeCounterView(views.APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated]
 
     def get(self, request, id, pk):
         promotion = Promotion.objects.filter(category_id=id, pk=pk).first()
