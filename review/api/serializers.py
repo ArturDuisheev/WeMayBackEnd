@@ -3,9 +3,11 @@ from review.models import Review
 
 
 class ReviewSerializer(serializers.ModelSerializer):
+    created_time = serializers.ReadOnlyField()
+
     class Meta:
         model = Review
-        fields = '__all__'
+        exclude = ['likes']
 
     def to_representation(self, instance):
         representation = super().to_representation(instance)

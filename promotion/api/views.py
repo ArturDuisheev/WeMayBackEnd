@@ -74,7 +74,7 @@ class LikeCounterView(views.APIView):
         current_like.create(promotion_id=promotion.id, myuser_id=user.id)
         like_count = current_like.count()
 
-        return Response({'message': 'Добавлено в \'Понравившиися акции\'', 'count': like_count})
+        return Response({'message': 'Добавлено в \'Понравившиеся акции\'', 'count': like_count})
 
     def delete(self, request, id, pk):
         # Check if the user has already liked the promotion

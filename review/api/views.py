@@ -8,13 +8,76 @@ from .serializers import ReviewSerializer
 class ReviewListCreateAPIVIew(generics.ListCreateAPIView):
     queryset = Review.objects.all()
     serializer_class = ReviewSerializer
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+
+    def post(self, request, *args, **kwargs):
+        user = self.request.user
+
+        if not user.username or user.username == '':
+            return Response({'message': 'Вы не можете оставлять отзывы без \'username\'.'
+                                        ' Пожалуйста заполните это поле'},
+                            status=status.HTTP_400_BAD_REQUEST)
+
+        data = request.data
+        data['author'] = user.id
+        serializer = self.get_serializer(data=data)
+
+        if not serializer.is_valid():
+            return Response({'message': 'Неправильный формат данных'},
+                            status=status.HTTP_400_BAD_REQUEST)
+
+        serializer.save()
+        return Response({'message': 'Отзыв успешно создан'},
+                        status=status.HTTP_201_CREATED)
+
+
+class MyReviewListAPIVIew(generics.ListAPIView):
+    queryset = Review.objects.all()
+    serializer_class = ReviewSerializer
     permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        user = self.request.user
+        return self.queryset.filter(author=user)
 
 
 class ReviewDetailAPIView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Review.objects.all()
     serializer_class = ReviewSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+
+    def put(self, request, *args, **kwargs):
+        review = self.get_object()
+        if review.author == self.request.user:
+            return super().put(request, *args, **kwargs)
+
+        return Response(
+            {"Сообщение": "У вас нет разрешения на изменение этого отзыва"},
+            status=status.HTTP_403_FORBIDDEN,
+        )
+
+    def patch(self, request, *args, **kwargs):
+        review = self.get_object()
+        if review.author == self.request.user:
+            return super().patch(request, *args, **kwargs)
+
+        return Response(
+            {"Сообщение": "У вас нет разрешения на изменение этого отзыва"},
+            status=status.HTTP_403_FORBIDDEN,
+        )
+
+    def delete(self, request, *args, **kwargs):
+        review = self.get_object()
+        if review.author == self.request.user:
+            review.delete()
+            return Response(
+                {"Сообщение": "Отзыв успешно удален"}, status=status.HTTP_204_NO_CONTENT
+            )
+
+        return Response(
+            {"Сообщение": "У вас нет разрешения на удаление этого отзыва"},
+            status=status.HTTP_403_FORBIDDEN
+        )
 
 
 class LikeCounterView(views.APIView):
