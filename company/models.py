@@ -4,6 +4,7 @@ from promotion.models import Promotion
 
 
 class Company(models.Model):
+    name = models.CharField(max_length=50)
     image = models.ImageField(upload_to=company_image_path)
     discounts = models.PositiveIntegerField()
     promotions = models.ManyToManyField(Promotion, related_name='promotions')

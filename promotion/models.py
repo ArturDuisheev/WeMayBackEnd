@@ -1,9 +1,11 @@
 from django.db import models
 from user.models import MyUser
+from promotion.utils.utils import category_image_path
 
 
 class PromotionCategory(models.Model):
     title = models.CharField(max_length=30)
+    image = models.ImageField(upload_to=category_image_path, null=True)
     parent_category = models.ForeignKey('self', null=True, blank=True,
                                         on_delete=models.CASCADE,
                                         related_name='subcategories')
