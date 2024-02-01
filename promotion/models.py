@@ -1,13 +1,17 @@
 from django.db import models
+from django.core.validators import FileExtensionValidator
+
 from rest_framework.exceptions import ValidationError
 
 from user.models import MyUser
-from promotion.utils.utils import category_image_path
+from promotion.utils.utils import category_image_path, category_icon_path
 
 
 class PromotionCategory(models.Model):
     title = models.CharField(max_length=30)
     image = models.ImageField(upload_to=category_image_path, null=True)
+    icon = models.FileField(upload_to=category_icon_path, null=True,
+                            validators=[FileExtensionValidator(allowed_extensions=['svg'])])
     parent_category = models.ForeignKey('self', null=True, blank=True,
                                         on_delete=models.CASCADE,
                                         related_name='subcategories')
