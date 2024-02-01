@@ -62,6 +62,13 @@ AUTHENTICATION_BACKENDS = [
     'django.contrib.auth.backends.ModelBackend',
 ]
 
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_HOST_USER = 'breadydev@gmail.com'
+EMAIL_HOST_PASSWORD = '[YOUR EMAIL APP PASSWORD]'
+EMAIL_USE_TLS = True
+
 # Facebook configuration
 SOCIAL_AUTH_FACEBOOK_KEY = '1865554967282122'
 SOCIAL_AUTH_FACEBOOK_SECRET = '581ade1363f2b24b241f06d4dfc78031'

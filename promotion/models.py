@@ -1,4 +1,6 @@
 from django.db import models
+from rest_framework.exceptions import ValidationError
+
 from user.models import MyUser
 from promotion.utils.utils import category_image_path
 
@@ -16,6 +18,11 @@ class PromotionCategory(models.Model):
         verbose_name_plural = 'promotion_categories'
 
 
+def validate_discount(discount):
+    if discount > 100:
+        raise ValidationError({'message': 'Скидка не может быть больше 100 процентов'})
+
+
 class Promotion(models.Model):
     PROMOTION_CHOICES = (
         ('Discount', 'Скидка'),
@@ -25,16 +32,18 @@ class Promotion(models.Model):
     category = models.ForeignKey(PromotionCategory, null=True, blank=True,
                                  on_delete=models.CASCADE, related_name='category')
     title = models.CharField(max_length=25)
-    image = models.ImageField(upload_to='promotion/%Y%m%d/')
-    old_price = models.PositiveIntegerField()
-    discount = models.PositiveIntegerField(null=True)
+    image = models.ImageField(upload_to='promotion/%Y-%m-%d/')
+    old_price = models.PositiveIntegerField(null=True)
+    new_price = models.PositiveIntegerField()
+    discount = models.PositiveIntegerField(null=True, validators=[validate_discount])
     description = models.TextField()
     type = models.CharField(max_length=45, choices=PROMOTION_CHOICES, default=PROMOTION_CHOICES[0][0])
     contacts = models.CharField(max_length=45)
     work_time = models.CharField(max_length=25, null=True)
     address = models.CharField(max_length=85)
     likes = models.ManyToManyField(MyUser, related_name='liked_promotions')
-    # created_date = models.DateTimeField(auto_now_add=True)
+    end_date = models.DateField(null=True)
+    is_daily = models.BooleanField(default=False)
 
     class Meta:
         db_table = 'promotion'
