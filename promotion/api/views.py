@@ -52,6 +52,10 @@ class PromotionListAPIView(generics.ListAPIView):
         if path_filter == 'daily':
             return queryset.filter(is_daily=True)
 
+        if path_filter == 'liked':
+            print(self.request.user)
+            return queryset.filter(likes__email=self.request.user)
+
         return queryset
 
     # This function is overwritten specially for pagination
