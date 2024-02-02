@@ -62,26 +62,12 @@ AUTHENTICATION_BACKENDS = [
     'django.contrib.auth.backends.ModelBackend',
 ]
 
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_PORT = 587
-EMAIL_HOST_USER = 'breadydev@gmail.com'
-EMAIL_HOST_PASSWORD = 'tcxa aksv sitr rpcs'
-EMAIL_USE_TLS = True
-
-# Facebook configuration
-SOCIAL_AUTH_FACEBOOK_KEY = '1865554967282122'
-SOCIAL_AUTH_FACEBOOK_SECRET = '581ade1363f2b24b241f06d4dfc78031'
-
 SOCIAL_AUTH_FACEBOOK_SCOPE = ['email']
 SOCIAL_AUTH_FACEBOOK_PROFILE_EXTRA_PARAMS = {
     'fields': 'id, name, email'
 }
 SOCIAL_AUTH_USER_FIELDS = ['email', 'username', 'password']
 
-# Google configuration
-SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = '1098845463259-qdaa20c0kvtifopbgnbo4plektq473jo.apps.googleusercontent.com'
-SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = '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'
 
 # Define SOCIAL_AUTH_GOOGLE_OAUTH2_SCOPE to get extra permissions from Google.
 SOCIAL_AUTH_GOOGLE_OAUTH2_SCOPE = [
@@ -115,7 +101,6 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
-        # 'rest_framework_simplejwt.authentication.JWTAuthentication',
         'oauth2_provider.contrib.rest_framework.OAuth2Authentication',
         'drf_social_oauth2.authentication.SocialAuthentication',
     ],
@@ -125,7 +110,7 @@ REST_FRAMEWORK = {
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR, 'templates')],  # Define the directory where your templates are stored
+        'DIRS': [os.path.join(BASE_DIR, 'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -144,7 +129,6 @@ if not PRODUCTION:
     from .local import *
 else:
     from .production import *
-
 
 LANGUAGE_CODE = 'en-us'
 
