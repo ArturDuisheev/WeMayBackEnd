@@ -75,18 +75,6 @@ class PromotionCreateAPIView(generics.CreateAPIView):
     serializer_class = PromotionSerializer
     permission_classes = [permissions.IsAuthenticated]
 
-# class PromotionListAPIView(generics.ListCreateAPIView):
-#     # Annotate queryset to sort the promotions by the quantity of their likes
-#     queryset = Promotion.objects.annotate(Count('likes')).order_by('-likes__count')
-#     serializer_class = PromotionSerializer
-#     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
-#     filter_backends = [filters.SearchFilter, DjangoFilterBackend]
-#
-#     # Search fields variable used for comfortable division of all fields
-#     search_fields = ['title', 'description', 'type', 'address']
-#     filterset_fields = ['category', 'type', 'discount', 'likes', 'is_daily']
-#     filterset_fields.extend(search_fields)
-
 
 class PromotionDetailAPIView(generics.RetrieveDestroyAPIView):
     queryset = Promotion.objects.all()
@@ -97,8 +85,8 @@ class PromotionDetailAPIView(generics.RetrieveDestroyAPIView):
 class LikeCounterView(views.APIView):
     permission_classes = [permissions.IsAuthenticated]
 
-    def get(self, request, id, pk):
-        promotion = Promotion.objects.filter(category_id=id, pk=pk).first()
+    def get(self, request, pk):
+        promotion = Promotion.objects.filter(pk=pk).first()
 
         if not promotion:
             return Response({'message': 'Акция не найдена'}, status=status.HTTP_404_NOT_FOUND)
@@ -109,9 +97,9 @@ class LikeCounterView(views.APIView):
 
         return Response({'likes_count': like_count}, status=status.HTTP_200_OK)
 
-    def post(self, request, id, pk):
+    def post(self, request, pk):
         user = self.request.user
-        promotion = Promotion.objects.filter(category_id=id, pk=pk).first()
+        promotion = Promotion.objects.filter(pk=pk).first()
 
         if not promotion:
             return Response({'message': 'Акция не найдена'}, status=status.HTTP_404_NOT_FOUND)
@@ -129,10 +117,10 @@ class LikeCounterView(views.APIView):
 
         return Response({'message': 'Добавлено в \'Понравившиеся акции\'', 'count': like_count})
 
-    def delete(self, request, id, pk):
+    def delete(self, request, pk):
         # Check if the user has already liked the promotion
         user = self.request.user
-        promotion = Promotion.objects.filter(category_id=id, pk=pk).first()
+        promotion = Promotion.objects.filter(pk=pk).first()
 
         if not promotion:
             return Response({'detail': 'Акция не найдена'}, status=status.HTTP_404_NOT_FOUND)
