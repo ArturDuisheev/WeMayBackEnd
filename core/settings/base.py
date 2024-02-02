@@ -10,11 +10,7 @@ PRODUCTION = env("PRODUCTION", default=False, cast=bool)
 
 ALLOWED_HOSTS = ['127.0.0.1', 'localhost']
 
-CORS_ALLOWED_ORIGINS = [
-    "http://localhost:5173",
-    "https://inai-library.netlify.app",
-    "https://libr2.vercel.app",
-]
+CORS_ALLOWED_ORIGINS = []
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -68,7 +64,6 @@ SOCIAL_AUTH_FACEBOOK_PROFILE_EXTRA_PARAMS = {
 }
 SOCIAL_AUTH_USER_FIELDS = ['email', 'username', 'password']
 
-
 # Define SOCIAL_AUTH_GOOGLE_OAUTH2_SCOPE to get extra permissions from Google.
 SOCIAL_AUTH_GOOGLE_OAUTH2_SCOPE = [
     'https://www.googleapis.com/auth/userinfo.email',
@@ -83,7 +78,6 @@ DJOSER = {
     'SERIALIZERS': {},
     'LOGIN_FIELD': 'email'
 }
-
 
 AUTH_PASSWORD_VALIDATORS = [
     {
