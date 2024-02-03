@@ -15,9 +15,6 @@ class MyUser(AbstractUser, PermissionsMixin):
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['username']
 
-    def __str__(self):
-        return self.email
-
     def save(self, *args, **kwargs):
         if self.password and not self.password.startswith(("pbkdf2_sha256$", "bcrypt")):
             self.set_password(self.password)
@@ -27,3 +24,6 @@ class MyUser(AbstractUser, PermissionsMixin):
         db_table = 'user'
         verbose_name = 'user'
         verbose_name_plural = 'users'
+
+    def __str__(self):
+        return f'Пользователь {self.username if self.username else self.email}'

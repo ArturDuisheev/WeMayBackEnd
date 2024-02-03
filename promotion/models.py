@@ -21,6 +21,9 @@ class PromotionCategory(models.Model):
         verbose_name = 'promotion_category'
         verbose_name_plural = 'promotion_categories'
 
+    def __str__(self):
+        return f'Категория {self.title}'
+
 
 def validate_discount(discount):
     if discount > 100:
@@ -53,3 +56,6 @@ class Promotion(models.Model):
         db_table = 'promotion'
         verbose_name = 'promotion'
         verbose_name_plural = 'promotions'
+
+    def __str__(self):
+        return f'Акция {self.title} с категорией {self.category.title}'
