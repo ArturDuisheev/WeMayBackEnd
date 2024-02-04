@@ -33,10 +33,10 @@ class Promotion(models.Model):
     work_time = models.CharField(max_length=25, null=True)
     address = models.CharField(max_length=85)
     likes = models.ManyToManyField(MyUser, related_name='liked_promotions')
-    # created_date = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return self.title
+
 
 class Like(models.Model):
     user = models.ForeignKey(MyUser, on_delete=models.CASCADE)
