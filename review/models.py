@@ -15,4 +15,5 @@ class Review(models.Model):
         verbose_name_plural = 'reviews'
 
     def __str__(self):
-        return f'Отзыв от {self.author.username}'
+        username = self.author.username
+        return f'Отзыв от {username if username else self.author.email}'

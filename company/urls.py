@@ -1,5 +1,5 @@
 from django.urls import path
-from api.views import CompanyListCreateAPIView, CompanyDetailAPIView
+from .api.views import CompanyListCreateAPIView, CompanyDetailAPIView
 
 urlpatterns = [
     path('company/all/', CompanyListCreateAPIView.as_view()),

@@ -16,6 +16,7 @@ class MyUser(AbstractUser, PermissionsMixin):
     REQUIRED_FIELDS = ['username']
 
     def save(self, *args, **kwargs):
+        # Check if the password is already hashed (if not we hash it)
         if self.password and not self.password.startswith(("pbkdf2_sha256$", "bcrypt")):
             self.set_password(self.password)
         super().save(*args, **kwargs)

@@ -41,13 +41,22 @@ schema_view = get_schema_view(
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('api/v1/', include('user.urls')),
-    path('api/v1/', include('promotion.urls')),
-    path('api/v1/', include('review.urls')),
+
+    # Пути для приложений
+    path('api/v1/users/', include('user.urls')),
+    path('api/v1/promotions/', include('promotion.urls')),
+    path('api/v1/reviews/', include('review.urls')),
+    path('api/v1/companies/', include('company.urls')),
+
+    # Auth URL с использованием djoser
     path('api/v1/auth/', include('djoser.urls')),
-    path('api/v1/auth/', include('djoser.urls.authtoken')),
-    path('api/v1/auth/', include('djoser.urls.jwt')),
+    path('api/v1/auth/token/', include('djoser.urls.authtoken')),
+    path('api/v1/auth/jwt/', include('djoser.urls.jwt')),
+
+    # OAuth2 URL
     path('api/v1/oauth/', include('drf_social_oauth2.urls', namespace='drf')),
+
+    # Swagger URLS
     path('swagger<str:format>', schema_view.without_ui(cache_timeout=0), name='schema-json'),
     path('swagger/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
     path('redoc/', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc'),

@@ -26,6 +26,7 @@ INSTALLED_APPS = [
     'user',
     'promotion',
     'review',
+    'company',
     'oauth2_provider',
     'social_django',
     'drf_social_oauth2',
@@ -62,6 +63,7 @@ SOCIAL_AUTH_FACEBOOK_SCOPE = ['email']
 SOCIAL_AUTH_FACEBOOK_PROFILE_EXTRA_PARAMS = {
     'fields': 'id, name, email'
 }
+
 SOCIAL_AUTH_USER_FIELDS = ['email', 'username', 'password']
 
 # Define SOCIAL_AUTH_GOOGLE_OAUTH2_SCOPE to get extra permissions from Google.
