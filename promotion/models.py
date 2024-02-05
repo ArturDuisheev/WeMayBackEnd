@@ -50,8 +50,8 @@ class Promotion(models.Model):
     contacts = models.CharField(max_length=45)
     work_time = models.CharField(max_length=25, null=True)
     address = models.CharField(max_length=85)
-    likes = models.ManyToManyField(MyUser, related_name='liked_promotions')
-    end_date = models.DateField(null=True)
+    likes = models.ManyToManyField(MyUser, related_name='liked_promotions', blank=True)
+    end_date = models.DateField()
     is_daily = models.BooleanField(default=False)
 
     class Meta:

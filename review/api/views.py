@@ -5,40 +5,42 @@ from review.models import Review
 from .serializers import ReviewSerializer
 
 
-class ReviewListCreateAPIVIew(generics.ListCreateAPIView):
+class ReviewListAPIVIew(generics.ListAPIView):
     queryset = Review.objects.all()
     serializer_class = ReviewSerializer
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    permission_classes = [permissions.AllowAny]
+
+    def get_queryset(self):
+        return self.queryset.filter(author=self.request.user) if (
+            self.kwargs.get('my')) else self.queryset.all()
+
+
+class ReviewCreateAPIVIew(generics.CreateAPIView):
+    serializer_class = ReviewSerializer
+    permission_classes = [permissions.IsAuthenticated]
 
     def post(self, request, *args, **kwargs):
         user = self.request.user
 
         if not user.username or user.username == '':
-            return Response({'message': 'Вы не можете оставлять отзывы без \'username\'.'
-                                        ' Пожалуйста заполните это поле'},
-                            status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                {'message':
+                     'Вы не можете оставлять отзывы без \'username\'.'
+                     ' Пожалуйста заполните это поле'
+                 }, status=status.HTTP_400_BAD_REQUEST
+            )
 
-        data = request.data
+        data = self.request.data
         data['author'] = user.id
+
         serializer = self.get_serializer(data=data)
-
-        if not serializer.is_valid():
-            return Response({'message': 'Неправильный формат данных'},
-                            status=status.HTTP_400_BAD_REQUEST)
-
+        serializer.is_valid(raise_exception=True)
         serializer.save()
-        return Response({'message': 'Отзыв успешно создан'},
-                        status=status.HTTP_201_CREATED)
 
-
-class MyReviewListAPIVIew(generics.ListAPIView):
-    queryset = Review.objects.all()
-    serializer_class = ReviewSerializer
-    permission_classes = [permissions.IsAuthenticated]
-
-    def get_queryset(self):
-        user = self.request.user
-        return self.queryset.filter(author=user)
+        return Response(
+            {'message': 'Отзыв успешно создан'},
+            status=status.HTTP_201_CREATED
+        )
 
 
 class ReviewDetailAPIView(generics.RetrieveUpdateDestroyAPIView):
@@ -46,32 +48,31 @@ class ReviewDetailAPIView(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = ReviewSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 
-    def put(self, request, *args, **kwargs):
-        review = self.get_object()
-        if review.author == self.request.user:
-            return super().put(request, *args, **kwargs)
-
-        return Response(
-            {"Сообщение": "У вас нет разрешения на изменение этого отзыва"},
-            status=status.HTTP_403_FORBIDDEN
-        )
-
     def patch(self, request, *args, **kwargs):
         review = self.get_object()
+
         if review.author == self.request.user:
             return super().patch(request, *args, **kwargs)
 
         return Response(
-            {"Сообщение": "У вас нет разрешения на изменение этого отзыва"},
+            {'message': "У вас нет разрешения на изменение этого отзыва"},
+            status=status.HTTP_403_FORBIDDEN
+        )
+
+    def put(self, request, *args, **kwargs):
+        return Response(
+            {'message': 'Method PUT not allowed'},
             status=status.HTTP_403_FORBIDDEN
         )
 
     def delete(self, request, *args, **kwargs):
         review = self.get_object()
+
         if review.author == self.request.user:
             review.delete()
             return Response(
-                {"Сообщение": "Отзыв успешно удален"}, status=status.HTTP_204_NO_CONTENT
+                {"Сообщение": "Отзыв успешно удален"},
+                status=status.HTTP_204_NO_CONTENT
             )
 
         return Response(
@@ -113,7 +114,7 @@ class LikeCounterView(views.APIView):
         current_like.create(review_id=review.id, myuser_id=user.id)
         like_count = current_like.count()
 
-        return Response({'message': 'Добавлено в \'Понравившиися акции\'', 'count': like_count})
+        return Response({'message': 'Добавлено в \'Понравившиися отзывы\'', 'count': like_count})
 
     def delete(self, request, pk):
         # Check if the user has already liked the review

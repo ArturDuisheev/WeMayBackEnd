@@ -5,7 +5,7 @@ from user.models import MyUser
 class Review(models.Model):
     author = models.ForeignKey(MyUser, on_delete=models.CASCADE, related_name='author')
     body = models.TextField()
-    likes = models.ManyToManyField(MyUser, related_name='likes')
+    likes = models.ManyToManyField(MyUser, related_name='likes', blank=True)
     created_time = models.DateTimeField(auto_now_add=True)
 
     class Meta:

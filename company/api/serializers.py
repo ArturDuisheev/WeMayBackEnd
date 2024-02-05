@@ -1,11 +1,17 @@
 from rest_framework import serializers
 from company.models import Company, Contact
+from promotion.models import Promotion
 
 
 class CompanySerializer(serializers.ModelSerializer):
+    promotions_count = serializers.SerializerMethodField()
+
     class Meta:
         model = Company
         fields = '__all__'
+
+    def get_promotions_count(self, obj):
+        return Promotion.objects.filter(company=obj).count()
 
 
 class ContactSerializer(serializers.ModelSerializer):

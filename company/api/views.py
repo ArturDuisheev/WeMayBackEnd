@@ -8,12 +8,13 @@ from company.models import Company, Contact
 
 
 class ContactCreateAPIView(generics.CreateAPIView):
+    serializer_class = ContactSerializer
     permission_classes = [permissions.IsAuthenticated]
 
     def post(self, request, *args, **kwargs):
         data = request.data
         data['company'] = self.kwargs.get('pk')
-        serializer = ContactSerializer(data=data)
+        serializer = self.get_serializer(data=data)
         serializer.is_valid(raise_exception=True)
         serializer.save()
 

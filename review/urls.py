@@ -1,9 +1,10 @@
 from django.urls import path
-from .api.views import ReviewListCreateAPIVIew, MyReviewListAPIVIew, ReviewDetailAPIView, LikeCounterView
+from .api import views
 
 urlpatterns = [
-    path('all/', ReviewListCreateAPIVIew.as_view()),
-    path('my/', MyReviewListAPIVIew.as_view()),
-    path('<int:pk>/', ReviewDetailAPIView.as_view()),
-    path('<int:pk>/like/', LikeCounterView.as_view())
+    path('all/', views.ReviewListAPIVIew.as_view()),
+    path('all/<str:my>', views.ReviewListAPIVIew.as_view()),
+    path('create/', views.ReviewCreateAPIVIew.as_view()),
+    path('<int:pk>/', views.ReviewDetailAPIView.as_view()),
+    path('<int:pk>/like/', views.LikeCounterView.as_view()),
 ]

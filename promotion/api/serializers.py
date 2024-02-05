@@ -21,5 +21,5 @@ class PromotionSerializer(serializers.ModelSerializer):
 
     def to_representation(self, instance):
         representation = super().to_representation(instance)
-        representation['category'] = instance.category.title
+        representation['category_name'] = instance.category.title
         return representation

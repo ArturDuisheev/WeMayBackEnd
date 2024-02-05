@@ -12,10 +12,15 @@ from promotion.paginations import CustomPagePagination
 from .serializers import PromotionCategorySerializer, PromotionSerializer
 
 
-class PromotionCategoryListCreateAPIView(generics.ListCreateAPIView):
+class PromotionCategoryCreateAPIView(generics.CreateAPIView):
+    serializer_class = PromotionCategorySerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+
+class PromotionCategoryListAPIView(generics.ListAPIView):
     queryset = PromotionCategory.objects.all()
     serializer_class = PromotionCategorySerializer
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    permission_classes = [permissions.AllowAny]
 
     filter_backends = [filters.SearchFilter]
     search_fields = ['title']
@@ -29,46 +34,28 @@ class PromotionCategoryDetailAPIView(generics.RetrieveDestroyAPIView):
 
 class PromotionListAPIView(generics.ListAPIView):
     serializer_class = PromotionSerializer
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    permission_classes = [permissions.AllowAny]
     pagination_class = CustomPagePagination
     filter_backends = [filters.SearchFilter, DjangoFilterBackend]
     filterset_fields = ['title', 'description', 'type', 'address',
-                        'category__title', 'type', 'discount', 'likes', 'company']
+                        'category__title', 'type', 'discount', 'likes',
+                        'company__name']
 
     def get_queryset(self):
-        path_filter = self.kwargs.get('path_filter')
-
         queryset = Promotion.objects.annotate(Count('likes')).order_by('-likes__count')
+        filter = self.kwargs.get('filter')
 
-        if path_filter == 'free':
-            return queryset.filter(new_price=0)
+        filter_dict = {
+            'free': queryset.filter(new_price=0),
+            'daily': queryset.filter(is_daily=True),
+            'liked': queryset.filter(likes__email=self.request.user.email),
+            'end_soon': queryset.filter(
+                end_date__lte=date.today() + timedelta(days=3),
+                end_date__gte=date.today()
+            ),
+        }
 
-        if path_filter == 'end_soon':
-            interval_days = 3
-            today = date.today()
-            end_interval = timedelta(days=interval_days)
-            return queryset.filter(end_date__lte=today + end_interval, end_date__gte=today)
-
-        if path_filter == 'daily':
-            return queryset.filter(is_daily=True)
-
-        if path_filter == 'liked':
-            print(self.request.user)
-            return queryset.filter(likes__email=self.request.user)
-
-        return queryset
-
-    # This function is overwritten specially for pagination
-    def list(self, request, *args, **kwargs):
-        queryset = self.get_queryset()
-        page = self.paginate_queryset(queryset)
-
-        if page:
-            serializer = self.get_serializer(page, many=True)
-            return self.get_paginated_response(serializer.data)
-
-        serializer = self.get_serializer(queryset, many=True)
-        return Response(serializer.data)
+        return filter_dict.get(filter) if filter in filter_dict else queryset
 
 
 class PromotionCreateAPIView(generics.CreateAPIView):
