@@ -8,7 +8,7 @@ from rest_framework import generics, status, views, filters, permissions
 from django_filters.rest_framework import DjangoFilterBackend
 
 from promotion.models import PromotionCategory, Promotion
-from promotion.paginations import PromotionPagePagination
+from promotion.paginations import CustomPagePagination
 from .serializers import PromotionCategorySerializer, PromotionSerializer
 
 
@@ -30,10 +30,10 @@ class PromotionCategoryDetailAPIView(generics.RetrieveDestroyAPIView):
 class PromotionListAPIView(generics.ListAPIView):
     serializer_class = PromotionSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
-    pagination_class = PromotionPagePagination
+    pagination_class = CustomPagePagination
     filter_backends = [filters.SearchFilter, DjangoFilterBackend]
     filterset_fields = ['title', 'description', 'type', 'address',
-                        'category__title', 'type', 'discount', 'likes']
+                        'category__title', 'type', 'discount', 'likes', 'company']
 
     def get_queryset(self):
         path_filter = self.kwargs.get('path_filter')

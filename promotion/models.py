@@ -3,6 +3,7 @@ from django.core.validators import FileExtensionValidator
 
 from rest_framework.exceptions import ValidationError
 
+from company.models import Company
 from user.models import MyUser
 from promotion.utils.utils import category_image_path, category_icon_path
 
@@ -38,6 +39,7 @@ class Promotion(models.Model):
     )
     category = models.ForeignKey(PromotionCategory, null=True, blank=True,
                                  on_delete=models.CASCADE, related_name='category')
+    company = models.ForeignKey(Company, on_delete=models.CASCADE)
     title = models.CharField(max_length=25)
     image = models.ImageField(upload_to='promotion/%Y-%m-%d/')
     old_price = models.PositiveIntegerField(null=True)

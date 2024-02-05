@@ -7,6 +7,7 @@ from user.utils.utils import user_image_path
 
 class MyUser(AbstractUser, PermissionsMixin):
     username = models.CharField(unique=True, max_length=50, null=True)
+    fullname = models.CharField(max_length=200, null=True)
     email = models.EmailField(unique=True)
     image = models.ImageField(upload_to=user_image_path, default=None, blank=True)
 
