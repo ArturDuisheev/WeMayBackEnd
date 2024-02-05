@@ -1,9 +1,11 @@
 from django.db import models
 from company.utils.utils import company_image_path
+from user.models import MyUser
 
 
 class Company(models.Model):
-    name = models.CharField(max_length=50)
+    owner = models.ForeignKey(MyUser, on_delete=models.CASCADE, related_name='owner')
+    name = models.CharField(max_length=100, unique=True)
     image = models.ImageField(upload_to=company_image_path)
     discounts = models.PositiveIntegerField()
     description = models.TextField()
@@ -19,7 +21,7 @@ class Company(models.Model):
 
 class Contact(models.Model):
     company = models.ForeignKey(Company, on_delete=models.CASCADE)
-    title = models.CharField(max_length=50)
+    title = models.CharField(max_length=50, unique=True)
     value = models.CharField(max_length=250)
 
     class Meta:

@@ -14,10 +14,14 @@ class PromotionCategorySerializer(serializers.ModelSerializer):
 
 
 class PromotionSerializer(serializers.ModelSerializer):
+    reviews_count = serializers.SerializerMethodField()
 
     class Meta:
         model = Promotion
-        fields = '__all__'
+        fields = '__all__' + 'reviews_count'
+
+    def get_reviews_count(self, obj):
+        return Promotion.objects.filter(category=obj).count()
 
     def to_representation(self, instance):
         representation = super().to_representation(instance)

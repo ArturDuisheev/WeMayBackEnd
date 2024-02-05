@@ -2,6 +2,7 @@
 
 from django.conf import settings
 from django.db import migrations, models
+import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
@@ -9,14 +10,14 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        ('promotion', '0001_initial'),
+        ('company', '0001_initial'),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='promotion',
-            name='likes',
-            field=models.ManyToManyField(blank=True, related_name='liked_promotions', to=settings.AUTH_USER_MODEL),
+            model_name='company',
+            name='owner',
+            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='owner', to=settings.AUTH_USER_MODEL),
         ),
     ]

@@ -7,9 +7,10 @@ class ReviewSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Review
-        exclude = ['likes']
+        fields = '__all__'
 
     def to_representation(self, instance):
         representation = super().to_representation(instance)
-        representation['author'] = instance.author.username
+        representation['author_username'] = instance.author.username
+        representation['promotion_title'] = instance.promotion.title
         return representation

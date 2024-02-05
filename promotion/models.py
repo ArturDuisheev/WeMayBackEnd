@@ -47,7 +47,7 @@ class Promotion(models.Model):
     discount = models.PositiveIntegerField(null=True, validators=[validate_discount])
     description = models.TextField()
     type = models.CharField(max_length=45, choices=PROMOTION_CHOICES, default=PROMOTION_CHOICES[0][0])
-    contacts = models.CharField(max_length=45)
+    contacts = models.CharField(max_length=100)
     work_time = models.CharField(max_length=25, null=True)
     address = models.CharField(max_length=85)
     likes = models.ManyToManyField(MyUser, related_name='liked_promotions', blank=True)

@@ -13,6 +13,11 @@ class CompanySerializer(serializers.ModelSerializer):
     def get_promotions_count(self, obj):
         return Promotion.objects.filter(company=obj).count()
 
+    def to_representation(self, instance):
+        representation = super().to_representation(instance)
+        representation['owner_username'] = instance.owner.username
+        return representation
+
 
 class ContactSerializer(serializers.ModelSerializer):
     class Meta:
