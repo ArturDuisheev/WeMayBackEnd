@@ -9,20 +9,15 @@ from user.api.serializers import RegisterSerializer
 class RegisterAPIView(TokenView):
     def post(self, request, *args, **kwargs):
         serializer = RegisterSerializer(data=request.data)
-        try:
-            serializer.is_valid(raise_exception=True)
-            serializer.save()
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
 
-            # Prepare the data for getting tokens
-            request.data['username'] = request.data.pop('email')
-            tokens = super().post(request, *args, **kwargs)
+        # Prepare the data for getting tokens
+        request.data['username'] = request.data.pop('email')
+        tokens = super().post(request, *args, **kwargs)
 
-            return Response({
-                "message": "Вы успешно зарегистрировались!",
-                **tokens.data},
-                status=status.HTTP_201_CREATED
-            )
-
-        except Exception as e:
-            print(e)
-            return Response({'error': str(e)})
+        return Response({
+            "message": "Вы успешно зарегистрировались!",
+            **tokens.data},
+            status=status.HTTP_201_CREATED
+        )
