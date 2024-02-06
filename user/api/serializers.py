@@ -2,12 +2,15 @@ from rest_framework import serializers
 from user.models import MyUser
 
 
-class RegisterSerializer(serializers.Serializer):
+class RegisterSerializer(serializers.ModelSerializer):
     password = serializers.CharField(max_length=20, write_only=True)
     client_id = serializers.CharField(max_length=200, write_only=True)
     client_secret = serializers.CharField(max_length=200, write_only=True)
     grant_type = serializers.CharField(max_length=200, write_only=True)
-    email = serializers.CharField(max_length=100)
+
+    class Meta:
+        model = MyUser
+        fields = ['email', 'password', 'client_secret', 'client_id', 'grant_type']
 
     def create(self, validated_data):
         validated_data.pop('client_id')

@@ -14,7 +14,7 @@ class MyUser(AbstractUser, PermissionsMixin):
     objects = MyUserManager()
 
     USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = ['username']
+    REQUIRED_FIELDS = ['username', 'fullname']
 
     def save(self, *args, **kwargs):
         # Check if the password is already hashed (if not we hash it)
