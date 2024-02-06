@@ -1,10 +1,14 @@
 from django.urls import path
-from promotion.api.views import PromotionCategoryListAPIView, PromotionCategoryDetailAPIView, PromotionListAPIView, PromotionDetailAPIView, LikeCounterView
-urlpatterns = [
-    path('category/', PromotionCategoryListAPIView.as_view(), name='category'),
-    path('category/<int:id>/', PromotionCategoryDetailAPIView.as_view(), name='category-detail'),
-    path('category/<int:id>/promotion/', PromotionListAPIView.as_view(), name='promotion'),
-    path('category/<int:id>/promotion/<int:pk>/', PromotionDetailAPIView.as_view(), name='promotion-detail'),
-    path('category/<int:id>/promotion/<int:pk>/like/<int:like_pk>/', LikeCounterView.as_view(), name='like-counter'),
+from .api import views
 
+urlpatterns = [
+    path('category/all/', views.PromotionCategoryListCreateAPIView.as_view(), name='category'),
+    path('category/<int:pk>/', views.PromotionCategoryDetailAPIView.as_view(), name='category-detail'),
+    path('promotion/all/', views.PromotionListAPIView.as_view()),
+
+    # Path filter (free, end_soon, daily, liked) are used to filter the objects by these fields
+    path('promotion/all/<str:path_filter>/', views.PromotionListAPIView.as_view()),
+    path('promotion/create/', views.PromotionCreateAPIView.as_view()),
+    path('promotion/<int:pk>/', views.PromotionDetailAPIView.as_view()),
+    path('promotion/<int:pk>/like/', views.LikeCounterView.as_view()),
 ]

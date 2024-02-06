@@ -19,3 +19,9 @@ class CompanySerializer(serializers.ModelSerializer):
         return f'{max_discount_promotion.discount}%' if max_discount_promotion else None
 
 
+
+
+# class CompanySerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = Company
+#         fields = '__all__'

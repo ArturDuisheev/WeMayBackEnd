@@ -1,26 +1,18 @@
-import uuid
-
 from django.db import models
+from company.utils.utils import company_image_path
 from promotion.models import Promotion
-# Create your models here.
 
 
 class Company(models.Model):
-    company_id = models.UUIDField(
-        primary_key=True,
-        unique=True,
-        default=uuid.uuid4,
-        editable=False,
-    )
-    title = models.CharField(max_length=75, blank=False, null=True)
-    image = models.ImageField(upload_to='company/%Y%m%d/', blank=False)
-    description = models.TextField()
-    promotions = models.ManyToManyField(Promotion, related_name='companies')
+    name = models.CharField(max_length=50)
+    image = models.ImageField(upload_to=company_image_path)
+    discounts = models.PositiveIntegerField()
+    promotions = models.ManyToManyField(Promotion, related_name='promotions')
 
+    class Meta:
+        db_table = 'company'
+        verbose_name = 'company'
+        verbose_name_plural = 'companies'
 
     def __str__(self):
-        return self.title
-
-
-
-
+        return f'Компания {self.name}'
