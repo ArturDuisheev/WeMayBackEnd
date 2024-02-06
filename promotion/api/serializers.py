@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from promotion.models import PromotionCategory, Promotion
+from review.models import Review
 
 
 class PromotionCategorySerializer(serializers.ModelSerializer):
@@ -18,10 +19,14 @@ class PromotionSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Promotion
-        fields = '__all__' + 'reviews_count'
+        fields = ['category', 'company', 'title', 'image',
+                  'old_price', 'new_price', 'discount',
+                  'description', 'type', 'contacts',
+                  'work_time', 'address', 'likes',
+                  'end_date', 'is_daily', 'reviews_count']
 
     def get_reviews_count(self, obj):
-        return Promotion.objects.filter(category=obj).count()
+        return Review.objects.filter(promotion=obj).count()
 
     def to_representation(self, instance):
         representation = super().to_representation(instance)
