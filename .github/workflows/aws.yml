@@ -7,7 +7,7 @@ on:
 env:
   AWS_REGION: eu-north-1             # установите предпочтительный регион AWS, например, us-west-1
   ECR_REPOSITORY: deployrep           # установите имя вашего репозитория Amazon ECR
-  EC2_INSTANCE_IP:    # установите IP-адрес вашего EC2-инстанса
+  EC2_INSTANCE_IP: 13.51.206.26   # установите IP-адрес вашего EC2-инстанса
   SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
 
 permissions:
