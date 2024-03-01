@@ -8,7 +8,7 @@ class PromotionCategorySerializer(serializers.ModelSerializer):
 
     class Meta:
         model = PromotionCategory
-        fields = ['id', 'title', 'image', 'parent_category', 'promotions_count', 'icon']
+        fields = ['id', 'title', 'image', 'parent_category', 'promotions_count']
 
     def get_promotions_count(self, obj):
         return Promotion.objects.filter(category=obj).count()
