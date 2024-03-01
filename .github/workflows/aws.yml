@@ -1,0 +1,34 @@
+name: Deploy to EC2
+
+on:
+  push:
+    branches: [ "dev" ]
+
+env:
+  AWS_REGION: eu-north-1             # установите предпочтительный регион AWS, например, us-west-1
+  ECR_REPOSITORY: deployrep           # установите имя вашего репозитория Amazon ECR
+  EC2_INSTANCE_IP: 13.51.206.26   # установите IP-адрес вашего EC2-инстанса
+  SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    name: Deploy
+    runs-on: ubuntu-latest
+    environment: production
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-region: ${{ env.AWS_REGION }}
+
+    - name: SSH into EC2 and deploy container
+      run: |
+        scp -i <(echo "${{ env.SSH_PRIVATE_KEY }}") -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -r . ec2-user@${{ env.EC2_INSTANCE_IP }}:/home/ubuntu/WeMayBackEnd
+        ssh -i <(echo "${{ env.SSH_PRIVATE_KEY }}") -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null ec2-user@${{ env.EC2_INSTANCE_IP }} "docker-compose -f /home/ubuntu/WeMayBackEnd/docker-compose.yml up -d"
