@@ -57,10 +57,6 @@ class PromotionCategory(models.Model):
         verbose_name_plural = 'promotion_categories'
 
 
-
-    
-
-
 class Promotion(models.Model):
     PROMOTION_CHOICES = (
         ('Discount', 'Скидка'),
@@ -94,4 +90,16 @@ class Promotion(models.Model):
         verbose_name = 'promotion'
         verbose_name_plural = 'promotions'
 
-    
+
+class PromotionImage(models.Model):
+    title = models.CharField(max_length=30)
+    image = models.ImageField(upload_to=category_image_path, null=True)
+    promotion = models.ForeignKey(Promotion, on_delete=models.CASCADE, related_name='images')
+
+    def __str__(self):
+        return f'Фото {self.title} для '
+
+    class Meta:
+        db_table = 'promotion_image'
+        verbose_name = 'promotion_image'
+        verbose_name_plural = 'promotion_images'

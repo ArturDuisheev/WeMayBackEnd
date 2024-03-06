@@ -48,7 +48,7 @@ class PromotionListAPIView(generics.ListAPIView):
         filter_dict = {
             'free': queryset.filter(new_price=0),
             'daily': queryset.filter(is_daily=True),
-            'liked': queryset.filter(likes__email=self.request.user.email),
+            'liked': queryset.filter(likes__email=self.request.user),
             'end_soon': queryset.filter(
                 end_date__lte=date.today() + timedelta(days=3),
                 end_date__gte=date.today()

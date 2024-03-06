@@ -22,7 +22,7 @@ class PromotionSerializer(serializers.ModelSerializer):
         fields = ['category', 'company', 'title', 'image',
                   'old_price', 'new_price', 'discount',
                   'description', 'type', 'contacts',
-                  'work_time', 'address', 'likes',
+                  'work_time', 'address', 'likes', 'images',
                   'end_date', 'is_daily', 'reviews_count']
 
     def get_reviews_count(self, obj):
