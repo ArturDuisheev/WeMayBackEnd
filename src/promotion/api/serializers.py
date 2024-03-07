@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from promotion.models import PromotionCategory, Promotion
+from promotion.models import PromotionCategory, Promotion, PromotionImage
 from review.models import Review
 
 
@@ -14,8 +14,15 @@ class PromotionCategorySerializer(serializers.ModelSerializer):
         return Promotion.objects.filter(category=obj).count()
 
 
+class PromotionImageSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = PromotionImage
+        fields = ['title', 'image']
+
+
 class PromotionSerializer(serializers.ModelSerializer):
     reviews_count = serializers.SerializerMethodField()
+    images = PromotionImageSerializer(many=True)
 
     class Meta:
         model = Promotion

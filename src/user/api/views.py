@@ -17,7 +17,7 @@ class RegisterAPIView(TokenView):
         serializer.is_valid(raise_exception=True)
         with transaction.atomic():
             try:
-                user = serializer.save()
+                serializer.save()
             except Exception:
                 transaction.set_rollback(True)
                 return Response({
