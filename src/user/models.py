@@ -14,7 +14,7 @@ class MyUser(AbstractUser, PermissionsMixin):
     objects = MyUserManager()
 
     USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = ['username', 'fullname']
+    REQUIRED_FIELDS = ['username', 'fullname', 'image']
 
     def save(self, *args, **kwargs):
         if self.password and not self.password.startswith(("pbkdf2_sha256$", "bcrypt")):
