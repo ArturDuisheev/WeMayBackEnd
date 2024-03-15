@@ -1,10 +1,14 @@
 from django.db import transaction
 from drf_social_oauth2.views import TokenView
 
+from djoser.views import UserViewSet
+
+
 from rest_framework.response import Response
 from rest_framework import status
 
-from user.api.serializers import RegisterSerializer
+
+from user.api.serializers import RegisterSerializer, CustomUserSerializer
 from user import models as us_mod
 
 
@@ -39,3 +43,7 @@ class RegisterAPIView(TokenView):
              **tokens.data},
             status=status.HTTP_201_CREATED
         )
+
+
+class CustomUserViewSet(UserViewSet):
+    serializer_class = CustomUserSerializer

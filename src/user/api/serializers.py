@@ -1,5 +1,11 @@
+import time
+
 from rest_framework import serializers
+from djoser.serializers import UserSerializer
+
 from user.models import MyUser
+
+from time import sleep
 
 
 class RegisterSerializer(serializers.ModelSerializer):
@@ -18,3 +24,14 @@ class RegisterSerializer(serializers.ModelSerializer):
         validated_data.pop('grant_type')
         user = MyUser.objects.create_user(**validated_data)
         return user
+
+
+class CustomUserSerializer(UserSerializer):
+
+    def update(self, instance, validated_data):
+        image = validated_data.pop('image', None)
+        instance = super().update(instance, validated_data)
+        if image:
+            instance.image = image
+            instance.save()
+        return instance
