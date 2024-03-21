@@ -31,7 +31,7 @@ class AddressSerializer(serializers.ModelSerializer):
     class Meta:
         model = PromotionAddress
         fields = (
-            'id street'.split(',')
+            'id', 'street'
         )
 
     def get_street(self, obj):
