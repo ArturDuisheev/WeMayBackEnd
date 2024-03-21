@@ -10,7 +10,7 @@ PRODUCTION = env("PRODUCTION", default=False, cast=bool)
 
 ALLOWED_HOSTS = ['127.0.0.1', 'localhost']
 
-CORS_ALLOWED_ORIGINS = ['http://localhost:3000','http://127.0.0.1:3000']
+CORS_ALLOWED_ORIGINS = ['http://localhost:3000', 'http://127.0.0.1:3000']
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -60,6 +60,25 @@ AUTHENTICATION_BACKENDS = [
     'django.contrib.auth.backends.ModelBackend',
 ]
 
+TEMPLATES = [
+    {
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        'DIRS': [os.path.join(BASE_DIR, 'templates')],
+        'APP_DIRS': True,
+        'OPTIONS': {
+            'context_processors': [
+                'django.template.context_processors.debug',
+                'django.template.context_processors.request',
+                'django.contrib.auth.context_processors.auth',
+                'django.contrib.messages.context_processors.messages',
+                'django.template.context_processors.i18n',
+                'social_django.context_processors.backends',
+                'social_django.context_processors.login_redirect',
+            ],
+        },
+    },
+]
+
 SOCIAL_AUTH_FACEBOOK_SCOPE = ['email']
 SOCIAL_AUTH_FACEBOOK_PROFILE_EXTRA_PARAMS = {
     'fields': 'id, name, email'
@@ -74,12 +93,18 @@ SOCIAL_AUTH_GOOGLE_OAUTH2_SCOPE = [
 ]
 
 DJOSER = {
-    'PASSWORD_RESET_CONFIRM_URL': '#/password/reset/confirm/{uid}/{token}',
+    # 'PASSWORD_RESET_CONFIRM_URL': '#/password/reset/confirm/{uid}/{token}',
+    # 'PASSWORD_RESET_CONFIRM_TEMPLATE': '#/custom_reset_password_email.html',
+    'PASSWORD_RESET_CONFIRM_URL': 'api/v1/auth/users/reset_password_confirm/?uid={uid}&token={token}',
     'USERNAME_RESET_CONFIRM_URL': '#/username/reset/confirm/{uid}/{token}',
     'ACTIVATION_URL': '#/activate/{uid}/token',
     'SEND_ACTIVATION_EMAIL': True,
     'SERIALIZERS': {},
-    'LOGIN_FIELD': 'email'
+    'LOGIN_FIELD': 'email',
+    # 'PASSWORD_RESET_CONFIRM_TEMPLATE': 'email/custom_reset_password_email.html',
+    'EMAIL': {
+        'password_reset': 'user.email.CustomPasswordResetEmail',
+    },
 }
 
 AUTH_PASSWORD_VALIDATORS = [
@@ -105,24 +130,6 @@ REST_FRAMEWORK = {
     # 'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
     # 'PAGE_SIZE': 6
 }
-
-TEMPLATES = [
-    {
-        'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR, 'templates')],
-        'APP_DIRS': True,
-        'OPTIONS': {
-            'context_processors': [
-                'django.template.context_processors.debug',
-                'django.template.context_processors.request',
-                'django.contrib.auth.context_processors.auth',
-                'django.contrib.messages.context_processors.messages',
-                'social_django.context_processors.backends',
-                'social_django.context_processors.login_redirect',
-            ],
-        },
-    },
-]
 
 if not PRODUCTION:
     from .local import *

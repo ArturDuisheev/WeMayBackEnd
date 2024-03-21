@@ -5,13 +5,19 @@ from review.models import Review
 
 class PromotionCategorySerializer(serializers.ModelSerializer):
     promotions_count = serializers.SerializerMethodField()
+    subcategories = serializers.SerializerMethodField()
 
     class Meta:
         model = PromotionCategory
-        fields = ['id', 'title', 'image', 'parent_category', 'promotions_count', 'icon']
+        fields = ['id', 'title', 'image', 'parent_category', 'subcategories', 'promotions_count', 'icon']
 
     def get_promotions_count(self, obj):
         return Promotion.objects.filter(category=obj).count()
+
+    def get_subcategories(self, obj):
+        subcategories = obj.subcategories.all()
+        serializer = self.__class__(subcategories, many=True)
+        return serializer.data
 
 
 class PromotionImageSerializer(serializers.ModelSerializer):
