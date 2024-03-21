@@ -100,6 +100,7 @@ class Promotion(models.Model):
     likes = models.ManyToManyField(MyUser, related_name='liked_promotions', blank=True, null=True)
     end_date = models.DateField()
     is_daily = models.BooleanField(default=False)
+    user = models.OneToOneField(MyUser, on_delete=models.CASCADE, related_name='users', blank=True, null=True)
 
     def __str__(self):
         return f'Акция {self.title} с категорией {self.category.title}'

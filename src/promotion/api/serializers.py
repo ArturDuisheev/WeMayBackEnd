@@ -68,7 +68,7 @@ class PromotionSerializer(serializers.ModelSerializer):
                   'old_price', 'new_price', 'discount',
                   'description', 'type', 'contacts',
                   'work_time', 'address', 'likes', 'images',
-                  'likes_count', 'end_date', 'is_daily', 'reviews_count']
+                  'likes_count', 'end_date', 'is_daily', 'reviews_count', 'user']
         
     def get_likes_count(self, obj):
         return obj.likes.count()
