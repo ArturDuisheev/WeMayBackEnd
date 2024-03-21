@@ -60,6 +60,7 @@ class PromotionSerializer(serializers.ModelSerializer):
     reviews_count = serializers.SerializerMethodField()
     images = PromotionImageSerializer(many=True)
     address = AddressSerializer(many=True)
+    work_time = serializers.CharField(required=False)
     likes_count = serializers.SerializerMethodField()
 
     class Meta:
