@@ -10,6 +10,7 @@ django-cors-headers==4.3.1
 django-debug-toolbar==4.2.0
 django-filter==23.5
 django-oauth-toolkit==2.3.0
+django-phonenumber-field==7.3.0
 django-templated-mail==1.1.1
 djangorestframework==3.14.0
 djangorestframework-simplejwt==5.3.1
@@ -23,6 +24,7 @@ inflection==0.5.1
 jwcrypto==1.5.1
 oauthlib==3.2.2
 packaging==23.2
+phonenumbers==8.13.30
 Pillow==10.1.0
 pyasn1==0.5.1
 pycparser==2.21

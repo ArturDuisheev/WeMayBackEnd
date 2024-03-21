@@ -6,10 +6,11 @@ from rest_framework.response import Response
 from rest_framework import generics, status, views, filters, permissions
 
 from django_filters.rest_framework import DjangoFilterBackend
+from company.models import Contact
 
 from promotion.models import PromotionCategory, Promotion
 from promotion.paginations import CustomPagePagination
-from .serializers import PromotionCategorySerializer, PromotionSerializer
+from .serializers import ContactSerializer, PromotionCategorySerializer, PromotionSerializer
 
 
 class PromotionCategoryCreateAPIView(generics.CreateAPIView):
@@ -48,7 +49,7 @@ class PromotionListAPIView(generics.ListAPIView):
         filter_dict = {
             'free': queryset.filter(new_price=0),
             'daily': queryset.filter(is_daily=True),
-            'liked': queryset.filter(likes__email=self.request.user.email),
+            'liked': queryset.filter(likes__email=self.request.user.email if None in self.kwargs else None),
             'end_soon': queryset.filter(
                 end_date__lte=date.today() + timedelta(days=3),
                 end_date__gte=date.today()
@@ -60,7 +61,7 @@ class PromotionListAPIView(generics.ListAPIView):
 
 class PromotionCreateAPIView(generics.CreateAPIView):
     serializer_class = PromotionSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.AllowAny]
 
 
 class PromotionDetailAPIView(generics.RetrieveDestroyAPIView):
@@ -145,3 +146,10 @@ class LikeCounterView(views.APIView):
             {'message': 'Лайк удален'},
             status=status.HTTP_204_NO_CONTENT
         )
+
+
+
+class ContactView(generics.CreateAPIView):
+
+    queryset = Contact.objects.all()
+    serializer_class = ContactSerializer
