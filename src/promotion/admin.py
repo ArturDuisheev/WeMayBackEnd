@@ -1,9 +1,10 @@
 from django.contrib import admin
-from .models import PromotionCategory, Promotion, PromotionImage
-# Register your models here.
+from .models import Contact, PromotionCategory, Promotion, PromotionAddress, PromotionImage
 
 
 admin.site.register(PromotionCategory)
 admin.site.register(Promotion)
+admin.site.register(PromotionAddress)
+admin.site.register(Contact)
 admin.site.register(Promotion.likes.through)
 admin.site.register(PromotionImage)

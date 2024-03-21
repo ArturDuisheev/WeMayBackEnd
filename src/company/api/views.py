@@ -11,26 +11,16 @@ class ContactCreateAPIView(generics.CreateAPIView):
     serializer_class = ContactSerializer
     permission_classes = [permissions.IsAuthenticated]
 
-    def post(self, request, *args, **kwargs):
-        data = request.data
-        data['company'] = self.kwargs.get('pk')
-        serializer = self.get_serializer(data=data)
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
-
-        return Response(
-            {'message': 'Вы успешно добавили контакт'},
-            status=status.HTTP_201_CREATED
-        )
+    def get_queryset(self):
+        return Contact.objects.all()
 
 
 class ContactListAPIView(generics.ListAPIView):
-    queryset = Contact.objects.all()
     serializer_class = ContactSerializer
     permission_classes = [permissions.AllowAny]
 
     def get_queryset(self):
-        return self.queryset.filter(company_id=self.kwargs['pk'])
+        return Contact.objects.filter(company_id=self.kwargs.get('pk'))
 
 
 class ContactDetailAPIView(generics.RetrieveUpdateDestroyAPIView):
@@ -41,7 +31,7 @@ class ContactDetailAPIView(generics.RetrieveUpdateDestroyAPIView):
 
 class CompanyCreateAPIView(generics.CreateAPIView):
     serializer_class = CompanySerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAdminUser]
 
     def post(self, request, *args, **kwargs):
         data = self.request.data
@@ -51,28 +41,27 @@ class CompanyCreateAPIView(generics.CreateAPIView):
         serializer.save()
 
         return Response(
-            {'message': 'Вы успешно создали компанию',
-             }, status=status.HTTP_201_CREATED
+            {'message': 'Вы успешно создали компанию'},
+            status=status.HTTP_201_CREATED
         )
 
 
 class CompanyListAPIView(generics.ListAPIView):
-    queryset = Company.objects.all()
     serializer_class = CompanySerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.AllowAny]
     filter_backends = [filters.SearchFilter, DjangoFilterBackend]
     filterset_fields = ['name', 'discounts', 'description', 'owner']
     pagination_class = CustomPagePagination
 
     def get_queryset(self):
-        return self.queryset.filter(owner=self.request.user) if (
-            self.kwargs.get('my')) else self.queryset
+        return Company.objects.filter(owner=self.request.user) if self.kwargs.get('my') else Company.objects.all()
 
 
 class CompanyDetailAPIView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Company.objects.all()
     serializer_class = CompanySerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.AllowAny]
+
 
     def patch(self, request, *args, **kwargs):
         company = self.get_object()

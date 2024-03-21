@@ -6,10 +6,11 @@ from rest_framework.response import Response
 from rest_framework import generics, status, views, filters, permissions
 
 from django_filters.rest_framework import DjangoFilterBackend
+from company.models import Contact
 
 from promotion.models import PromotionCategory, Promotion
 from promotion.paginations import CustomPagePagination
-from .serializers import PromotionCategorySerializer, PromotionSerializer
+from .serializers import ContactSerializer, PromotionCategorySerializer, PromotionSerializer
 
 
 class PromotionCategoryCreateAPIView(generics.CreateAPIView):
@@ -60,7 +61,7 @@ class PromotionListAPIView(generics.ListAPIView):
 
 class PromotionCreateAPIView(generics.CreateAPIView):
     serializer_class = PromotionSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.AllowAny]
 
 
 class PromotionDetailAPIView(generics.RetrieveDestroyAPIView):
@@ -145,3 +146,10 @@ class LikeCounterView(views.APIView):
             {'message': 'Лайк удален'},
             status=status.HTTP_204_NO_CONTENT
         )
+
+
+
+class ContactView(generics.CreateAPIView):
+
+    queryset = Contact.objects.all()
+    serializer_class = ContactSerializer

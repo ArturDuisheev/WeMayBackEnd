@@ -11,7 +11,10 @@ from company.models import Company
 from user.models import MyUser
 from promotion.utils.utils import category_image_path, category_icon_path
 
+from phonenumber_field.modelfields import PhoneNumberField
+
 import xml.etree.ElementTree as ET
+
 
 
 def validate_discount(discount):
@@ -40,7 +43,7 @@ def validate_svg_size(value):
 
 
 class PromotionCategory(models.Model):
-    title = models.CharField(max_length=30)
+    title = models.CharField(max_length=100)
     image = models.ImageField(upload_to=category_image_path, null=True)
     icon = models.FileField(upload_to=category_icon_path, null=True,
                             validators=[FileExtensionValidator(allowed_extensions=['svg']), validate_svg_size])
@@ -55,6 +58,17 @@ class PromotionCategory(models.Model):
         db_table = 'promotion_category'
         verbose_name = 'promotion_category'
         verbose_name_plural = 'promotion_categories'
+
+
+class PromotionAddress(models.Model):
+    street = models.CharField(max_length=120)
+
+    def __str__(self) -> str:
+        return f'{self.street}'
+
+    
+class Contact(models.Model):
+    phone_number = PhoneNumberField()
 
 
 class Promotion(models.Model):
@@ -75,10 +89,16 @@ class Promotion(models.Model):
     discount = models.PositiveIntegerField(null=True, validators=[validate_discount])
     description = models.TextField()
     type = models.CharField(max_length=45, choices=PROMOTION_CHOICES, default=PROMOTION_CHOICES[0][0])
-    contacts = models.CharField(max_length=100)
-    work_time = models.CharField(max_length=25, null=True)
-    address = models.CharField(max_length=85)
-    likes = models.ManyToManyField(MyUser, related_name='liked_promotions', blank=True)
+    contacts = models.ManyToManyField(
+        Contact,
+        verbose_name="Контакты акций",
+        related_name='promotion_contacts',
+        null=True,
+        blank=True,
+    )
+    work_time = models.CharField(max_length=100, null=True)
+    address = models.ManyToManyField(PromotionAddress, related_name='promotions_address')
+    likes = models.ManyToManyField(MyUser, related_name='liked_promotions', blank=True, null=True)
     end_date = models.DateField()
     is_daily = models.BooleanField(default=False)
 
