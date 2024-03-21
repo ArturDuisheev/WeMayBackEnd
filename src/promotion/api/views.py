@@ -10,7 +10,7 @@ from company.models import Contact
 
 from promotion.models import PromotionCategory, Promotion
 from promotion.paginations import CustomPagePagination
-from .serializers import ContactSerializer, PromotionCategorySerializer, PromotionSerializer, MyPromotionSerializer
+from .serializers import ContactSerializer, PromotionCategorySerializer, PromotionSerializer, MyPromotionSerializer, FavoritePromotionSerializer
 
 
 class PromotionCategoryCreateAPIView(generics.CreateAPIView):
@@ -167,3 +167,15 @@ class MyPromotionDelete(generics.DestroyAPIView):
     serializer_class = MyPromotionSerializer
     permission_classes = [pr_per.IsOwnerOrReadOnly]
     lookup_field = 'pk'
+
+
+
+class UserFavoritePromotionsAPIView(generics.ListAPIView):
+    serializer_class = PromotionSerializer
+    permission_classes = [pr_per.IsOwnerOrReadOnly]
+
+    def get_queryset(self):
+        user = self.request.user
+        return Promotion.objects.filter(likes=user)
+
+

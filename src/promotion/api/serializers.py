@@ -114,6 +114,7 @@ class PromotionSerializer(serializers.ModelSerializer):
 
 
 class MyPromotionSerializer(serializers.ModelSerializer):
+    like_count = serializers.SerializerMethodField('get_like_count')
 
     class Meta:
         model = Promotion
@@ -124,4 +125,25 @@ class MyPromotionSerializer(serializers.ModelSerializer):
             'title',
             'old_price',
             'new_price',
+            'likes',
+            'like_count',
         )
+
+    def get_like_count(self, obj):
+        return obj.likes.count()
+
+
+
+class FavoritePromotionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Promotion
+        fields = (
+            'id',
+            'image',
+            'discount',
+            'title',
+            'old_price',
+            'new_price',
+            'is_favorite',
+        )
+
