@@ -8,7 +8,7 @@ from rest_framework import generics, status, views, filters, permissions
 from django_filters.rest_framework import DjangoFilterBackend
 from company.models import Contact
 
-from promotion.models import PromotionCategory, Promotion
+from promotion.models import PromotionCategory, Promotion, PromotionAddress
 from promotion.paginations import CustomPagePagination
 from .serializers import ContactSerializer, PromotionCategorySerializer, PromotionSerializer, MyPromotionSerializer, FavoritePromotionSerializer
 
@@ -178,4 +178,11 @@ class UserFavoritePromotionsAPIView(generics.ListAPIView):
         user = self.request.user
         return Promotion.objects.filter(likes=user)
 
+from api.serializers import AddressSerializer
 
+class AddressCreateAPIView(generics.CreateAPIView):
+    queryset = PromotionAddress.objects.all()
+    serializer_class = AddressSerializer
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+
+    
