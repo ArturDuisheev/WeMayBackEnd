@@ -150,21 +150,3 @@ class UserProfileAPIView(generics.RetrieveUpdateAPIView):
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response(serializer.data)
-    # def retrieve(self, request):
-    #     data = request.data
-    #
-    #     return Response("Nothing")
-
-# class UserProfileAPIView(generics.RetrieveAPIView):
-#     serializer_class = CustomUserSerializer
-#     permission_classes = [permissions.IsAuthenticated]
-#
-#     def get_object(self):
-#         token = self.request.headers.get('Authorization').split()[1]
-#         user = us_mod.MyUser.objects.get(user__auth_token=token)
-#         return user
-#
-#     def retrieve(self, request, *args, **kwargs):
-#         instance = self.get_object()
-#         serializer = self.get_serializer(instance)
-#         return Response(serializer.data)

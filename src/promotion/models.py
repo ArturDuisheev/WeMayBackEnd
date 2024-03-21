@@ -96,7 +96,6 @@ class Promotion(models.Model):
         null=True,
         blank=True,
     )
-    work_time = models.CharField(max_length=100, null=True)
     address = models.ManyToManyField(PromotionAddress, related_name='promotions_address')
     likes = models.ManyToManyField(MyUser, related_name='liked_promotions', blank=True, null=True)
     end_date = models.DateField()
@@ -123,3 +122,27 @@ class PromotionImage(models.Model):
         db_table = 'promotion_image'
         verbose_name = 'promotion_image'
         verbose_name_plural = 'promotion_images'
+
+
+class WorkTime(models.Model):
+    DAYS_OF_THE_WEEK = (
+        ('Понедельник', 'Понедельник'),
+        ('Вторник', 'Вторник'),
+        ('Среда', 'Среда'),
+        ('Четверг', 'Четверг'),
+        ('Пятница', 'Пятница'),
+        ('Суббота', 'Суббота'),
+        ('Воскресенье', 'Воскресенье'),
+    )
+    promotion = models.ForeignKey(Promotion, on_delete=models.CASCADE, related_name='work_time')
+    week_day = models.CharField(max_length=100, choices=DAYS_OF_THE_WEEK)
+    start_time = models.CharField(max_length=100)
+    end_time = models.CharField(max_length=100)
+
+    def __str__(self):
+        return f'Время работы: {self.week_day}: {self.start_time}-{self.end_time} '
+
+    class Meta:
+        db_table = 'work_time'
+        verbose_name = 'work_time'
+        verbose_name_plural = 'work_times'

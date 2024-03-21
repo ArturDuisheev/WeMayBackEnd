@@ -11,7 +11,7 @@ class ContactSerializer(serializers.ModelSerializer):
     class Meta:
         model = Contact
         fields = '__all__'
-        ref_name='contact'
+        ref_name = 'contact'
 
 
 class PromotionCategorySerializer(serializers.ModelSerializer):
