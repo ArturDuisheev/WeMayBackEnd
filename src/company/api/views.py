@@ -31,7 +31,7 @@ class ContactDetailAPIView(generics.RetrieveUpdateDestroyAPIView):
 
 class CompanyCreateAPIView(generics.CreateAPIView):
     serializer_class = CompanySerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAdminUser]
 
     def post(self, request, *args, **kwargs):
         data = self.request.data
@@ -48,7 +48,7 @@ class CompanyCreateAPIView(generics.CreateAPIView):
 
 class CompanyListAPIView(generics.ListAPIView):
     serializer_class = CompanySerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.AllowAny]
     filter_backends = [filters.SearchFilter, DjangoFilterBackend]
     filterset_fields = ['name', 'discounts', 'description', 'owner']
     pagination_class = CustomPagePagination
@@ -60,7 +60,8 @@ class CompanyListAPIView(generics.ListAPIView):
 class CompanyDetailAPIView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Company.objects.all()
     serializer_class = CompanySerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.AllowAny]
+
 
     def patch(self, request, *args, **kwargs):
         company = self.get_object()
