@@ -12,4 +12,7 @@ urlpatterns = [
     path('create/', views.PromotionCreateAPIView.as_view(), name='promotion-create'),
     path('<int:pk>/', views.PromotionDetailAPIView.as_view(), name='promotion-detail'),
     path('<int:pk>/like/', views.LikeCounterView.as_view(), name='promotion-likes'),
+    path('my/', views.MyPromotionList.as_view(), name='promotion-my'),
+    path('my/del/', views.MyPromotionList.as_view(), name='promotion-my-del'),
 ]
+

@@ -10,7 +10,7 @@ from company.models import Contact
 
 from promotion.models import PromotionCategory, Promotion
 from promotion.paginations import CustomPagePagination
-from .serializers import ContactSerializer, PromotionCategorySerializer, PromotionSerializer
+from .serializers import ContactSerializer, PromotionCategorySerializer, PromotionSerializer, MyPromotionSerializer
 
 
 class PromotionCategoryCreateAPIView(generics.CreateAPIView):
@@ -148,8 +148,21 @@ class LikeCounterView(views.APIView):
         )
 
 
+from promotion.api import permissons as pr_per
 
 class ContactView(generics.CreateAPIView):
 
     queryset = Contact.objects.all()
     serializer_class = ContactSerializer
+
+
+class MyPromotionList(generics.ListAPIView):
+    queryset = Promotion.objects.all()
+    serializer_class = MyPromotionSerializer
+    permission_classes = [pr_per.IsOwnerOrReadOnly]
+
+
+class MyPromotionDelete(generics.DeleteAPIView):
+    queryset = Promotion.objects.all()
+    serializer_class = MyPromotionSerializer
+    permission_classes = [pr_per.IsOwnerOrReadOnly]

@@ -110,3 +110,18 @@ class PromotionSerializer(serializers.ModelSerializer):
                 promotion.address.add(address_instance)
                 print("адрес: ", address_instance)
         return promotion
+    
+
+
+class MyPromotionSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Promotion
+        fields = (
+            'id',
+            'image',
+            'discount',
+            'title',
+            'old_price',
+            'new_price',
+        )
