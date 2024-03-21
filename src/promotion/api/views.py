@@ -162,7 +162,7 @@ class MyPromotionList(generics.ListAPIView):
     permission_classes = [pr_per.IsOwnerOrReadOnly]
 
 
-class MyPromotionDelete(generics.DeleteAPIView):
+class MyPromotionDelete(generics.DestroyAPIView):
     queryset = Promotion.objects.all()
     serializer_class = MyPromotionSerializer
     permission_classes = [pr_per.IsOwnerOrReadOnly]
