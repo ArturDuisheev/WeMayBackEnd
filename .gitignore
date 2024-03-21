@@ -5,3 +5,7 @@ __pycache__/
 db.sqlite3
 media
 static
+promotion/migrations
+review/migrations
+user/migrations
+company/migrations
