@@ -166,3 +166,4 @@ class MyPromotionDelete(generics.DestroyAPIView):
     queryset = Promotion.objects.all()
     serializer_class = MyPromotionSerializer
     permission_classes = [pr_per.IsOwnerOrReadOnly]
+    lookup_field = 'pk'
