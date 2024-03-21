@@ -178,11 +178,10 @@ class UserFavoritePromotionsAPIView(generics.ListAPIView):
         user = self.request.user
         return Promotion.objects.filter(likes=user)
 
-from api.serializers import AddressSerializer
+from promotion.api.serializers import AddressSerializer
 
 class AddressCreateAPIView(generics.CreateAPIView):
     queryset = PromotionAddress.objects.all()
     serializer_class = AddressSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 
-    
