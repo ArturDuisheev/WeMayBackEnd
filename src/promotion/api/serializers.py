@@ -110,4 +110,3 @@ class PromotionSerializer(serializers.ModelSerializer):
                 promotion.address.add(address_instance)
                 print("адрес: ", address_instance)
         return promotion
-            
