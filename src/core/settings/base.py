@@ -95,15 +95,12 @@ SOCIAL_AUTH_GOOGLE_OAUTH2_SCOPE = [
 ]
 
 DJOSER = {
-    # 'PASSWORD_RESET_CONFIRM_URL': '#/password/reset/confirm/{uid}/{token}',
-    # 'PASSWORD_RESET_CONFIRM_TEMPLATE': '#/custom_reset_password_email.html',
-    'PASSWORD_RESET_CONFIRM_URL': 'api/v1/auth/users/reset_password_confirm/?uid={uid}&token={token}',
+    'PASSWORD_RESET_CONFIRM_URL': 'auth/confirm?entity=password&token={token}&uid={uid}',
     'USERNAME_RESET_CONFIRM_URL': '#/username/reset/confirm/{uid}/{token}',
     'ACTIVATION_URL': '#/activate/{uid}/token',
     'SEND_ACTIVATION_EMAIL': True,
     'SERIALIZERS': {},
     'LOGIN_FIELD': 'email',
-    # 'PASSWORD_RESET_CONFIRM_TEMPLATE': 'email/custom_reset_password_email.html',
     'EMAIL': {
         'password_reset': 'user.email.CustomPasswordResetEmail',
     },

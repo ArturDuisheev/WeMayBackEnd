@@ -12,8 +12,6 @@ urlpatterns = [
     path('oauth/facebook/', views.FacebookOAuthAPIView.as_view(), name='oauth_facebook'),
     path('oauth/google/', views.GoogleOAuthAPIView.as_view(), name='oauth_google'),
 
-    # Profile
+    # Profile (Change user's credentials)
     path('profile/', views.UserProfileAPIView.as_view(), name='profile'),
-
-    # Reset password
 ]
