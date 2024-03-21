@@ -67,7 +67,7 @@ class PromotionCreateAPIView(generics.CreateAPIView):
 class PromotionDetailAPIView(generics.RetrieveDestroyAPIView):
     queryset = Promotion.objects.all()
     serializer_class = PromotionSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 
 
 class LikeCounterView(views.APIView):
