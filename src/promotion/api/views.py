@@ -70,11 +70,17 @@ class PromotionDetailAPIView(generics.RetrieveDestroyAPIView):
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 
 
-class LikeCounterView(views.APIView):
+from promotion.api.serializers import LikeCounterSerializer
+from rest_framework.parsers import JSONParser
+
+class LikeCounterView(generics.CreateAPIView):
+    serializer_class = LikeCounterSerializer
     permission_classes = [permissions.IsAuthenticated]
 
-    def get(self, request, pk):
-        promotion = Promotion.objects.filter(pk=pk).first()
+    def get(self, request, *args, **kwargs):
+        promotion_id = kwargs.get('pk')
+        
+        promotion = Promotion.objects.filter(pk=promotion_id).first()
 
         if not promotion:
             return Response(
@@ -82,18 +88,17 @@ class LikeCounterView(views.APIView):
                 status=status.HTTP_404_NOT_FOUND
             )
 
-        # Retrieve the count of likes for the specified promotion
-        Like = promotion.likes.through
-        like_count = Like.objects.count()
+        like_count = promotion.likes.count()
 
         return Response(
             {'likes_count': like_count},
             status=status.HTTP_200_OK
         )
 
-    def post(self, request, pk):
-        user = self.request.user
-        promotion = Promotion.objects.filter(pk=pk).first()
+    def delete(self, request, *args, **kwargs):
+        promotion_id = kwargs.get('pk')
+        
+        promotion = Promotion.objects.filter(pk=promotion_id).first()
 
         if not promotion:
             return Response(
@@ -101,51 +106,45 @@ class LikeCounterView(views.APIView):
                 status=status.HTTP_404_NOT_FOUND
             )
 
-        Like = promotion.likes.through
-        current_like = Like.objects.filter(myuser_id=user.id)
+        if request.user in promotion.likes.all():
+            promotion.likes.remove(request.user)
+            return Response(
+                {'message': 'Лайк удален'},
+                status=status.HTTP_204_NO_CONTENT
+            )
+        else:
+            return Response(
+                {'message': 'Лайк не найден'},
+                status=status.HTTP_404_NOT_FOUND
+            )
 
-        # Check if current user has already liked the promotion
-        if current_like.exists():
+    def post(self, request, *args, **kwargs):
+        promotion_id = kwargs.get('pk')
+        
+        promotion = Promotion.objects.filter(pk=promotion_ido).first()
+
+        if not promotion:
+            return Response(
+                {'message': 'Акция не найдена'},
+                status=status.HTTP_404_NOT_FOUND
+            )
+
+        user = request.user
+
+        if user not in promotion.likes.all():
+            promotion.likes.add(user)
+            like_count = promotion.likes.count()
+
+            return Response(
+                {'message': 'Добавлено в \'Понравившиеся акции\'',
+                 'count': like_count},
+                status=status.HTTP_201_CREATED
+            )
+        else:
             return Response(
                 {'message': 'Вы уже поставили лайк на эту акцию'},
                 status=status.HTTP_400_BAD_REQUEST
             )
-
-        current_like.create(promotion_id=promotion.id, myuser_id=user.id)
-        like_count = current_like.count()
-
-        return Response(
-            {'message': 'Добавлено в \'Понравившиеся акции\'',
-             'count': like_count},
-            status=status.HTTP_201_CREATED
-        )
-
-    def delete(self, request, pk):
-        # Check if the user has already liked the promotion
-        user = self.request.user
-        promotion = Promotion.objects.filter(pk=pk).first()
-
-        if not promotion:
-            return Response(
-                {'message': 'Акция не найдена'},
-                status=status.HTTP_404_NOT_FOUND
-            )
-
-        # Get the intermediate table and get the current user's like
-        Like = promotion.likes.through
-        current_like = Like.objects.filter(myuser_id=user.id)
-
-        if not current_like:
-            return Response(
-                {'message': 'Вы уже удалили лайк'},
-                status=status.HTTP_204_NO_CONTENT
-            )
-        current_like.delete()
-
-        return Response(
-            {'message': 'Лайк удален'},
-            status=status.HTTP_204_NO_CONTENT
-        )
 
 
 from promotion.api import permissons as pr_per
@@ -165,7 +164,7 @@ class MyPromotionList(generics.ListAPIView):
 class MyPromotionDelete(generics.DestroyAPIView):
     queryset = Promotion.objects.all()
     serializer_class = MyPromotionSerializer
-    permission_classes = [pr_per.IsOwnerOrReadOnly]
+    permission_classes = [permissions.AllowAny]
     lookup_field = 'pk'
 
 

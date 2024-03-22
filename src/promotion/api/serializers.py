@@ -147,3 +147,14 @@ class FavoritePromotionSerializer(serializers.ModelSerializer):
             'is_favorite',
         )
 
+
+
+
+class LikeCounterSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Promotion
+        fields = (
+            'id',
+        
+        )
