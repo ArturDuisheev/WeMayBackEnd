@@ -32,6 +32,7 @@ class RegisterAPIView(TokenView):
             request.data['client_id'] = CLIENT_ID
             request.data['client_secret'] = CLIENT_SECRET
             request.data['grant_type'] = 'password'
+            print(request.data['grant_type'])
             tokens = super().post(request, *args, **kwargs)
 
             if tokens.status_code != status.HTTP_200_OK:
@@ -107,29 +108,26 @@ class FacebookOAuthAPIView(ConvertTokenView):
             **tokens.data},
             status=status.HTTP_201_CREATED
         )
-
+    
+from social_core.backends.google import GoogleOAuth2
+from social_core.exceptions import AuthFailed
+from social_django.utils import load_backend, load_strategy
 
 class GoogleOAuthAPIView(ConvertTokenView):
-    queryset = us_mod.MyUser.objects.all()
 
     def post(self, request, *args, **kwargs):
-        request.data['client_id'] = CLIENT_ID
-        request.data['client_secret'] = CLIENT_SECRET
-        request.data['grant_type'] = 'convert_token'
-        request.data['backend'] = 'google-oauth2'
-        tokens = super().post(request, *args, **kwargs)
+        access_token = request.data.get('access_token')
 
-        if tokens.status_code != 200:
-            return Response(
-                tokens.data,
-                status.HTTP_400_BAD_REQUEST
-            )
+        if not access_token:
+            return Response({"error": "Access token is required"}, status=status.HTTP_400_BAD_REQUEST)
 
-        return Response({
-            "message": "Вы успешно вошли в систему!",
-            **tokens.data},
-            status=status.HTTP_201_CREATED
-        )
+        try:
+            backend = load_backend(load_strategy(request), GoogleOAuth2.name, None)
+            user = backend.do_auth(access_token)
+        except AuthFailed as e:
+            return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+        except Exception as e:
+            return Response({"error": "Failed to authenticate"}, status=status.HTTP_400_BAD_REQUEST)
 
 
 class UserProfileAPIView(generics.RetrieveUpdateAPIView):

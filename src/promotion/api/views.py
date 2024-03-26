@@ -121,7 +121,7 @@ class LikeCounterView(generics.CreateAPIView):
     def post(self, request, *args, **kwargs):
         promotion_id = kwargs.get('pk')
         
-        promotion = Promotion.objects.filter(pk=promotion_ido).first()
+        promotion = Promotion.objects.filter(pk=promotion_id).first()
 
         if not promotion:
             return Response(
