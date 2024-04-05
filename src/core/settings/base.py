@@ -6,7 +6,7 @@ from core.env_reader import env
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # Production
-PRODUCTION = env("PRODUCTION", default=False, cast=bool)
+PRODUCTION = False
 
 ALLOWED_HOSTS = ['127.0.0.1', 'localhost']
 
@@ -21,7 +21,6 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'phonenumber_field',
-    'djoser',
     'debug_toolbar',
     'django_filters',
     'user',
@@ -45,6 +44,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'debug_toolbar.middleware.DebugToolbarMiddleware',
+    'social_django.middleware.SocialAuthExceptionMiddleware',
 ]
 CORS_ORIGIN_ALLOW_ALL = True
 WSGI_APPLICATION = "core.wsgi.application"
@@ -76,6 +76,7 @@ TEMPLATES = [
                 'django.template.context_processors.i18n',
                 'social_django.context_processors.backends',
                 'social_django.context_processors.login_redirect',
+                'company.context_variables.env_variables',
             ],
         },
     },

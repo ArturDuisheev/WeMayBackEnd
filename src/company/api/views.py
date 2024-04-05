@@ -1,3 +1,4 @@
+from django.shortcuts import render
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import generics, permissions, filters, status
 from rest_framework.response import Response
@@ -5,6 +6,11 @@ from rest_framework.response import Response
 from promotion.paginations import CustomPagePagination
 from .serializers import CompanySerializer, ContactSerializer
 from company.models import Company, Contact
+
+
+class HomepageAPIVIew(generics.ListAPIView):
+    def get(self, request, *args, **kwargs):
+        return render(self.request, 'homepage.html')
 
 
 class ContactCreateAPIView(generics.CreateAPIView):

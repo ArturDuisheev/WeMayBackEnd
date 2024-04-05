@@ -1,3 +1,7 @@
+from django.contrib.auth.hashers import make_password
+from django.http import HttpResponseRedirect
+from rest_framework.views import APIView
+
 from core.settings.base import CLIENT_ID, CLIENT_SECRET
 
 from django.db import transaction
@@ -6,8 +10,11 @@ from drf_social_oauth2.views import TokenView, RevokeTokenView, ConvertTokenView
 from rest_framework.response import Response
 from rest_framework import status, generics, permissions
 
+from core.settings.local import BASE_URL
 from user.api.serializers import AuthUserSerializer, CustomUserSerializer
 from user import models as us_mod
+from user.models import MyUser
+from user.services import UserService
 
 
 class RegisterAPIView(TokenView):
@@ -48,7 +55,6 @@ class RegisterAPIView(TokenView):
         )
 
 
-
 class LoginAPIView(TokenView):
     queryset = us_mod.MyUser.objects.all()
 
@@ -87,47 +93,88 @@ class LogoutAPIView(RevokeTokenView):
         )
 
 
-class FacebookOAuthAPIView(ConvertTokenView):
-    queryset = us_mod.MyUser.objects.all()
+class FacebookOAuthAPIView(APIView):
+    def get(self, request):
+        code = request.query_params.get('code')
 
-    def post(self, request, *args, **kwargs):
-        request.data['client_id'] = CLIENT_ID
-        request.data['client_secret'] = CLIENT_SECRET
-        request.data['grant_type'] = 'convert_token'
-        request.data['backend'] = 'facebook'
-        tokens = super().post(request, *args, **kwargs)
-
-        if tokens.status_code != 200:
+        if not code:
             return Response(
-                tokens.data,
-                status.HTTP_400_BAD_REQUEST
+                data={"message": "Authorization code is missing"},
+                status=status.HTTP_400_BAD_REQUEST,
             )
 
-        return Response({
-            "message": "Вы успешно вошли в систему!",
-            **tokens.data},
-            status=status.HTTP_201_CREATED
+        token_response = UserService.exchange_code_for_tokens_facebook(authorization_code=code).json()
+
+        if 'error' in token_response:
+            return Response(
+                data={"message": token_response.get("error_description")},
+                status=status.HTTP_401_UNAUTHORIZED,
+            )
+
+        access_token = token_response.get('access_token')
+        user_info = UserService.get_user_info_from_facebook(access_token=access_token)
+
+        if 'error' in user_info:
+            return Response(
+                data={"message": user_info.get("error_description")},
+                status=status.HTTP_401_UNAUTHORIZED,
+            )
+
+        user, created = MyUser.objects.get_or_create(
+            email=user_info["email"],
+            defaults={
+                'email': user_info["email"],
+                'password': make_password(MyUser.objects.make_random_password()),
+                'username': user_info.get("name"),
+                'fullname': user_info.get("name"),
+                'is_active': True
+            }
         )
-    
-from social_core.backends.google import GoogleOAuth2
-from social_core.exceptions import AuthFailed
-from social_django.utils import load_backend, load_strategy
 
-class GoogleOAuthAPIView(ConvertTokenView):
+        redirect_url = f'{BASE_URL}'  # TODO: сменить урл
+        return HttpResponseRedirect(redirect_url)
 
-    def post(self, request, *args, **kwargs):
-        access_token = request.data.get('access_token')
 
-        if not access_token:
-            return Response({"error": "Access token is required"}, status=status.HTTP_400_BAD_REQUEST)
+class GoogleOAuthAPIView(APIView):
+    def get(self, request):
+        code = request.query_params.get('code')
 
-        try:
-            backend = load_backend(load_strategy(request), GoogleOAuth2.name, None)
-            user = backend.do_auth(access_token)
-        except AuthFailed as e:
-            return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
-        except Exception as e:
-            return Response({"error": "Failed to authenticate"}, status=status.HTTP_400_BAD_REQUEST)
+        if not code:
+            return Response(
+                data={"message": "Authorization code is missing"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        token_response = UserService.exchange_code_for_tokens(authorization_code=code).json()
+
+        if 'error' in token_response:
+            return Response(
+                data={"message": token_response.get("error_description")},
+                status=status.HTTP_401_UNAUTHORIZED,
+            )
+
+        access_token = token_response.get('access_token')
+        user_info = UserService.get_user_info_from_google(access_token=access_token)
+
+        if 'error' in user_info:
+            return Response(
+                data={"message": user_info.get("error_description")},
+                status=status.HTTP_401_UNAUTHORIZED,
+            )
+
+        user, created = MyUser.objects.get_or_create(
+            email=user_info["email"],
+            defaults={
+                'email': user_info["email"],
+                'password': make_password(MyUser.objects.make_random_password()),
+                'username': user_info.get("name"),
+                'fullname': user_info.get("name"),
+                'is_active': True
+            }
+        )
+
+        redirect_url = f'{BASE_URL}'  # TODO: сменить урл
+        return HttpResponseRedirect(redirect_url)
 
 
 class UserProfileAPIView(generics.RetrieveUpdateAPIView):
