@@ -138,6 +138,7 @@ class FacebookOAuthAPIView(APIView):
 class GoogleOAuthAPIView(APIView):
     def get(self, request):
         code = request.query_params.get('code')
+        print("code:", code)
 
         if not code:
             return Response(
@@ -146,8 +147,10 @@ class GoogleOAuthAPIView(APIView):
             )
 
         token_response = UserService.exchange_code_for_tokens(authorization_code=code).json()
+        print(token_response)
 
         if 'error' in token_response:
+           
             return Response(
                 data={"message": token_response.get("error_description")},
                 status=status.HTTP_401_UNAUTHORIZED,
