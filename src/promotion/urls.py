@@ -15,6 +15,5 @@ urlpatterns = [
     path('my/', views.MyPromotionList.as_view(), name='promotion-my'),
     path('my/del/<int:pk>/', views.MyPromotionDelete.as_view(), name='promotion-my-del'),
     path('favorite/', views.UserFavoritePromotionsAPIView.as_view(), name='favorite-promotion'),
-    path('address-create/', views.AddressCreateAPIView.as_view(), name='address-create'),
 ]
 

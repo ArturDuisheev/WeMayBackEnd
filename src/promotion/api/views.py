@@ -3,14 +3,14 @@ from datetime import date, timedelta
 from django.db.models import Count
 
 from rest_framework.response import Response
-from rest_framework import generics, status, views, filters, permissions
+from rest_framework import generics, status, filters, permissions
 
 from django_filters.rest_framework import DjangoFilterBackend
 from company.models import Contact
 
-from promotion.models import PromotionCategory, Promotion, PromotionAddress
+from promotion.models import PromotionCategory, Promotion
 from promotion.paginations import CustomPagePagination
-from .serializers import ContactSerializer, PromotionCategorySerializer, PromotionSerializer, MyPromotionSerializer, FavoritePromotionSerializer
+from .serializers import PromotionCategorySerializer, PromotionSerializer, MyPromotionSerializer
 
 
 class PromotionCategoryCreateAPIView(generics.CreateAPIView):
@@ -71,7 +71,7 @@ class PromotionDetailAPIView(generics.RetrieveDestroyAPIView):
 
 
 from promotion.api.serializers import LikeCounterSerializer
-from rest_framework.parsers import JSONParser
+
 
 class LikeCounterView(generics.CreateAPIView):
     serializer_class = LikeCounterSerializer
@@ -79,7 +79,7 @@ class LikeCounterView(generics.CreateAPIView):
 
     def get(self, request, *args, **kwargs):
         promotion_id = kwargs.get('pk')
-        
+
         promotion = Promotion.objects.filter(pk=promotion_id).first()
 
         if not promotion:
@@ -97,7 +97,7 @@ class LikeCounterView(generics.CreateAPIView):
 
     def delete(self, request, *args, **kwargs):
         promotion_id = kwargs.get('pk')
-        
+
         promotion = Promotion.objects.filter(pk=promotion_id).first()
 
         if not promotion:
@@ -120,7 +120,7 @@ class LikeCounterView(generics.CreateAPIView):
 
     def post(self, request, *args, **kwargs):
         promotion_id = kwargs.get('pk')
-        
+
         promotion = Promotion.objects.filter(pk=promotion_id).first()
 
         if not promotion:
@@ -149,11 +149,6 @@ class LikeCounterView(generics.CreateAPIView):
 
 from promotion.api import permissons as pr_per
 
-class ContactView(generics.CreateAPIView):
-
-    queryset = Contact.objects.all()
-    serializer_class = ContactSerializer
-
 
 class MyPromotionList(generics.ListAPIView):
     queryset = Promotion.objects.all()
@@ -168,7 +163,6 @@ class MyPromotionDelete(generics.DestroyAPIView):
     lookup_field = 'pk'
 
 
-
 class UserFavoritePromotionsAPIView(generics.ListAPIView):
     serializer_class = PromotionSerializer
     permission_classes = [pr_per.IsOwnerOrReadOnly]
@@ -176,11 +170,3 @@ class UserFavoritePromotionsAPIView(generics.ListAPIView):
     def get_queryset(self):
         user = self.request.user
         return Promotion.objects.filter(likes=user)
-
-from promotion.api.serializers import AddressSerializer
-
-class AddressCreateAPIView(generics.CreateAPIView):
-    queryset = PromotionAddress.objects.all()
-    serializer_class = AddressSerializer
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
-

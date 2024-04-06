@@ -31,3 +31,40 @@ class Contact(models.Model):
 
     def __str__(self):
         return f'Контакт {self.title}'
+
+
+class WorkSchedule(models.Model):
+    company = models.OneToOneField(Company, on_delete=models.CASCADE, related_name='work_schedule')
+    MONDAY = 'Понедельник'
+    TUESDAY = 'Вторник'
+    WEDNESDAY = 'Среда'
+    THURSDAY = 'Четверг'
+    FRIDAY = 'Пятница'
+    SATURDAY = 'Суббота'
+    SUNDAY = 'Воскресенье'
+    DAY_CHOICES = [
+        (MONDAY, 'Понедельник'),
+        (TUESDAY, 'Вторник'),
+        (WEDNESDAY, 'Среда'),
+        (THURSDAY, 'Четверг'),
+        (FRIDAY, 'Пятница'),
+        (SATURDAY, 'Суббота'),
+        (SUNDAY, 'Воскресенье'),
+    ]
+    monday_start = models.TimeField(null=True, blank=True)
+    monday_end = models.TimeField(null=True, blank=True)
+    tuesday_start = models.TimeField(null=True, blank=True)
+    tuesday_end = models.TimeField(null=True, blank=True)
+    wednesday_start = models.TimeField(null=True, blank=True)
+    wednesday_end = models.TimeField(null=True, blank=True)
+    thursday_start = models.TimeField(null=True, blank=True)
+    thursday_end = models.TimeField(null=True, blank=True)
+    friday_start = models.TimeField(null=True, blank=True)
+    friday_end = models.TimeField(null=True, blank=True)
+    saturday_start = models.TimeField(null=True, blank=True)
+    saturday_end = models.TimeField(null=True, blank=True)
+    sunday_start = models.TimeField(null=True, blank=True)
+    sunday_end = models.TimeField(null=True, blank=True)
+
+    def __str__(self):
+        return f'Рабочее время для {self.company}'
