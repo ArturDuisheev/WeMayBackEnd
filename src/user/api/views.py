@@ -34,19 +34,20 @@ class RegisterAPIView(TokenView):
                     "message": "Произошла ошибка при регистрации пользователя"}
                     , status=status.HTTP_400_BAD_REQUEST
                 )
+            
+            mutable_data = request.data.copy()
 
-            request.data['username'] = request.data.pop('email')
-            request.data['client_id'] = CLIENT_ID
-            request.data['client_secret'] = CLIENT_SECRET
-            request.data['grant_type'] = 'password'
-            print(request.data['grant_type'])
+            mutable_data['client_id'] = CLIENT_ID
+            mutable_data['client_secret'] = CLIENT_SECRET
+            mutable_data['grant_type'] = 'password'
+            print(mutable_data['grant_type'])
             tokens = super().post(request, *args, **kwargs)
 
-            if tokens.status_code != status.HTTP_200_OK:
-                transaction.set_rollback(True)
-                return Response({
-                    "message": "Произошла ошибка при регистрации пользователя"}
-                    , status=status.HTTP_400_BAD_REQUEST)
+            # if tokens.status_code != status.HTTP_200_OK:
+            #     transaction.set_rollback(True)
+            #     return Response({
+            #         "message": "Произошла ошибка при регистрации пользователя"}
+            #         , status=status.HTTP_400_BAD_REQUEST)
 
         return Response({
             "message": "Вы успешно зарегистрировались!",
