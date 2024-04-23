@@ -19,11 +19,6 @@ class MyUser(AbstractUser, PermissionsMixin):
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['username', 'fullname', 'image']
 
-    def save(self, *args, **kwargs):
-        if self.password and not self.password.startswith(("pbkdf2_sha256$", "bcrypt")):
-            self.set_password(self.password)
-        super().save(*args, **kwargs)
-
     class Meta:
         db_table = 'user'
         verbose_name = 'user'

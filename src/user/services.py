@@ -3,6 +3,7 @@ from .models import MyUser
 from rest_framework.exceptions import NotFound
 from django.db.models import Model
 from decouple import config as env
+from rest_framework_simplejwt.tokens import RefreshToken
 
 
 class BaseService:
@@ -18,6 +19,14 @@ class BaseService:
 
 class UserService(BaseService):
     model = MyUser
+
+    @classmethod
+    def generate_jwt_token(cls, user):
+        refresh = RefreshToken.for_user(user)
+        return {
+            'refresh': str(refresh),
+            'access': str(refresh.access_token),
+        }
 
     @classmethod
     def get_user_info_from_google(cls, access_token):

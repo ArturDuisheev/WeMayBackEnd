@@ -6,7 +6,7 @@ from user.models import MyUser
 class AuthUserSerializer(serializers.ModelSerializer):
     class Meta:
         model = MyUser
-        fields = ['email', 'password']
+        fields = ['email', 'password', 'username']
 
 
 class CustomUserSerializer(serializers.ModelSerializer):

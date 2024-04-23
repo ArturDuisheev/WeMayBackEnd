@@ -1,11 +1,8 @@
+from django.contrib.auth import logout
 from django.contrib.auth.hashers import make_password
 from django.http import HttpResponseRedirect
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
-
-from core.settings.base import CLIENT_ID, CLIENT_SECRET
-
-from django.db import transaction
-from drf_social_oauth2.views import TokenView, RevokeTokenView, ConvertTokenView
 
 from rest_framework.response import Response
 from rest_framework import status, generics, permissions
@@ -17,81 +14,66 @@ from user.models import MyUser
 from user.services import UserService
 
 
-class RegisterAPIView(TokenView):
-    queryset = us_mod.MyUser.objects.all()
+class RegisterAPIView(APIView):
     serializer_class = AuthUserSerializer
 
     def post(self, request, *args, **kwargs):
         serializer = self.serializer_class(data=request.data)
-        serializer.is_valid(raise_exception=True)
+        if serializer.is_valid():
+            user_data = serializer.validated_data
+            email = user_data.get('email')
+            password = user_data.get('password')
+            username = user_data.get('username')
 
-        with transaction.atomic():
-            try:
-                serializer.save()
-            except Exception:
-                transaction.set_rollback(True)
-                return Response({
-                    "message": "Произошла ошибка при регистрации пользователя"}
-                    , status=status.HTTP_400_BAD_REQUEST
-                )
-            
-            mutable_data = request.data.copy()
-
-            mutable_data['client_id'] = CLIENT_ID
-            mutable_data['client_secret'] = CLIENT_SECRET
-            mutable_data['grant_type'] = 'password'
-            print(mutable_data['grant_type'])
-            tokens = super().post(request, *args, **kwargs)
-
-            # if tokens.status_code != status.HTTP_200_OK:
-            #     transaction.set_rollback(True)
-            #     return Response({
-            #         "message": "Произошла ошибка при регистрации пользователя"}
-            #         , status=status.HTTP_400_BAD_REQUEST)
-
-        return Response({
-            "message": "Вы успешно зарегистрировались!",
-             **tokens.data},
-            status=status.HTTP_201_CREATED
-        )
-
-
-class LoginAPIView(TokenView):
-    queryset = us_mod.MyUser.objects.all()
-
-    def post(self, request, *args, **kwargs):
-        request.data['username'] = request.data.pop('email')
-        request.data['client_id'] = CLIENT_ID
-        request.data['client_secret'] = CLIENT_SECRET
-        request.data['grant_type'] = 'password'
-        tokens = super().post(request, *args, **kwargs)
-
-        if tokens.status_code != 200:
-            return Response(
-                tokens.data,
-                status.HTTP_400_BAD_REQUEST
+            # Create the user
+            user, created = MyUser.objects.get_or_create(
+                email=email,
+                defaults={'username': username, 'password': password}
             )
 
-        return Response({
-            "message": "Вы успешно вошли в систему!",
-             **tokens.data},
-            status=status.HTTP_201_CREATED
-        )
+            if created:
+                tokens = UserService.generate_jwt_token(user)
+                return Response({
+                    "message": "You have been successfully registered!",
+                    "tokens": tokens
+                }, status=status.HTTP_201_CREATED)
+            else:
+                return Response({
+                    "message": "User with this email already exists."
+                }, status=status.HTTP_409_CONFLICT)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-class LogoutAPIView(RevokeTokenView):
+class LoginAPIView(APIView):
     queryset = us_mod.MyUser.objects.all()
+    serializer_class = AuthUserSerializer
 
     def post(self, request, *args, **kwargs):
-        request.data['client_id'] = CLIENT_ID
-        request.data['client_secret'] = CLIENT_SECRET
-        request.data['grant_type'] = 'password'
-        super().post(request, *args, **kwargs)
+            user_data = request.data
+            email = user_data.get('email')
+            password = user_data.get('password')
+            username = user_data.get('username')
+            user = MyUser.objects.get(
+                email=email,
+                username=username,
+                password=password
+            )
+            if not user:
+                return Response({"message": "Пользователь не найден"}, status=status.HTTP_404_NOT_FOUND)
 
-        return Response({
-            "message": "Вы успешно вышли из системы!"},
-            status=status.HTTP_201_CREATED
-        )
+            tokens = UserService.generate_jwt_token(user)
+            return Response({
+                f"message": "Вы успешно вошли в систему! "
+                            f"access_token: {tokens})"})
+
+
+class LogoutAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        logout(request.user)
+        return Response({"message": "Logout Successful"}, status=status.HTTP_200_OK)
 
 
 class FacebookOAuthAPIView(APIView):
@@ -148,10 +130,8 @@ class GoogleOAuthAPIView(APIView):
             )
 
         token_response = UserService.exchange_code_for_tokens(authorization_code=code).json()
-        print(token_response)
 
         if 'error' in token_response:
-           
             return Response(
                 data={"message": token_response.get("error_description")},
                 status=status.HTTP_401_UNAUTHORIZED,
@@ -176,9 +156,10 @@ class GoogleOAuthAPIView(APIView):
                 'is_active': True
             }
         )
+        tokens = UserService.generate_jwt_token(user)
 
         redirect_url = f'{BASE_URL}'  # TODO: сменить урл
-        return HttpResponseRedirect(redirect_url)
+        return HttpResponseRedirect(redirect_url, headers={'Authorization': f'Bearer {tokens["access"]}'})
 
 
 class UserProfileAPIView(generics.RetrieveUpdateAPIView):
