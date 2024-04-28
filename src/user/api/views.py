@@ -1,17 +1,20 @@
 from django.contrib.auth import logout
 from django.contrib.auth.hashers import make_password
 from django.http import HttpResponseRedirect
+from django.contrib.auth import authenticate, login
+from drf_yasg.utils import swagger_auto_schema
+
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
+from rest_framework_simplejwt.tokens import AccessToken, RefreshToken
 
 from rest_framework.response import Response
 from rest_framework import status, generics, permissions
 
 from core.settings.local import BASE_URL
 from user.api.serializers import AuthUserSerializer, CustomUserSerializer
-from user import models as us_mod
 from user.models import MyUser
-from user.services import UserService
+from user.services import UserService, for_user
 
 
 class RegisterAPIView(APIView):
@@ -23,7 +26,8 @@ class RegisterAPIView(APIView):
             user_data = serializer.validated_data
             email = user_data.get('email')
             password = user_data.get('password')
-            username = user_data.get('username')
+            username = user_data.get('username') if None else user_data.get('email')
+
 
             # Create the user
             user, created = MyUser.objects.get_or_create(
@@ -35,7 +39,8 @@ class RegisterAPIView(APIView):
                 tokens = UserService.generate_jwt_token(user)
                 return Response({
                     "message": "You have been successfully registered!",
-                    "tokens": tokens
+                    "tokens": tokens,
+                    "uuid": user.user_uuid,
                 }, status=status.HTTP_201_CREATED)
             else:
                 return Response({
@@ -45,27 +50,24 @@ class RegisterAPIView(APIView):
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
+
 class LoginAPIView(APIView):
-    queryset = us_mod.MyUser.objects.all()
-    serializer_class = AuthUserSerializer
+    def post(self, request):
+        serializer = AuthUserSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        user = authenticate(request, **serializer.validated_data)
 
-    def post(self, request, *args, **kwargs):
-            user_data = request.data
-            email = user_data.get('email')
-            password = user_data.get('password')
-            username = user_data.get('username')
-            user = MyUser.objects.get(
-                email=email,
-                username=username,
-                password=password
-            )
-            if not user:
-                return Response({"message": "Пользователь не найден"}, status=status.HTTP_404_NOT_FOUND)
+        if user:
+            login(request, user)
+            return Response(data={"message": "Вход в систему выполнен успешно",
+                                  "access": str(for_user(user)),
+                                  "refresh": str(for_user(user)),
+                                  "uuid": user.user_uuid}, status=status.HTTP_200_OK)
+        else:
+            return Response({'detail': 'Неверные данные, попробуйте ещё раз!'}, status=status.HTTP_400_BAD_REQUEST)
 
-            tokens = UserService.generate_jwt_token(user)
-            return Response({
-                f"message": "Вы успешно вошли в систему! "
-                            f"access_token: {tokens})"})
+
+
 
 
 class LogoutAPIView(APIView):
@@ -165,6 +167,7 @@ class GoogleOAuthAPIView(APIView):
 class UserProfileAPIView(generics.RetrieveUpdateAPIView):
     serializer_class = CustomUserSerializer
     permission_classes = [permissions.IsAuthenticated]
+    lookup_field = 'user_id'
 
     def get_object(self):
         return self.request.user

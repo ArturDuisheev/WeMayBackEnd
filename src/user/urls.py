@@ -14,7 +14,7 @@ urlpatterns = [
     path('oauth/google/', views.GoogleOAuthAPIView.as_view(), name='oauth_google'),
 
     # Profile (Change user's credentials)
-    path('profile/', views.UserProfileAPIView.as_view(), name='profile'),
+    path('profile/<str:user_id>/', views.UserProfileAPIView.as_view(), name='profile'),
 
     path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),

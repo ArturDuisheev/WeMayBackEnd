@@ -78,12 +78,16 @@ class Promotion(models.Model):
     discount = models.PositiveIntegerField(null=True, validators=[validate_discount])
     description = models.TextField()
     type = models.CharField(max_length=45, choices=PROMOTION_CHOICES, default=PROMOTION_CHOICES[0][0])
-    contacts = PhoneNumberField()
     address = models.CharField(max_length=300, null=True, blank=True)
     likes = models.ManyToManyField(MyUser, related_name='liked_promotions', blank=True, null=True)
-    end_date = models.DateField(default=datetime.datetime.today()+datetime.timedelta(days=5))
+    end_date = models.DateTimeField(auto_now=True)
     is_daily = models.BooleanField(default=False)
+    instagram = models.URLField(blank=True, null=True)
+    facebook = models.URLField(blank=True, null=True)
+    whatsapp = models.URLField(blank=True, null=True)
+    website = models.URLField(blank=True, null=True)
     user = models.OneToOneField(MyUser, on_delete=models.CASCADE, related_name='users', blank=True, null=True)
+
 
     def __str__(self):
         return (f'Акция {self.title} с категорией {self.category.title}')
@@ -106,4 +110,24 @@ class PromotionImage(models.Model):
         db_table = 'promotion_image'
         verbose_name = 'promotion_image'
         verbose_name_plural = 'promotion_images'
+
+
+class PromotionContact(models.Model):
+    phone = PhoneNumberField('Номер телефона')
+    promotion = models.ForeignKey(
+        Promotion, 
+        on_delete=models.CASCADE, 
+        related_name='promotion_contact',
+        verbose_name='К какой акции относиться'
+          )
+    
+    def __str__(self) -> str:
+        return f'номер: {self.phone}, акция: {self.promotion}'
+    
+    class Meta:
+        verbose_name = 'Номер телефона'
+        verbose_name_plural = verbose_name
+
+
+
 

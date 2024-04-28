@@ -8,15 +8,24 @@ from rest_framework import generics, status, filters, permissions
 from django_filters.rest_framework import DjangoFilterBackend
 from company.models import Contact
 
-from promotion.models import PromotionCategory, Promotion
+from promotion.models import PromotionCategory, Promotion, PromotionImage, PromotionContact
 from promotion.paginations import CustomPagePagination
-from .serializers import PromotionCategorySerializer, PromotionSerializer, MyPromotionSerializer
+from .serializers import PromotionCategorySerializer, PromotionSerializer, MyPromotionSerializer, PromotionContactSerializer, PromotionImageSerializer, PromotionHintSerializer
 
 
 class PromotionCategoryCreateAPIView(generics.CreateAPIView):
     serializer_class = PromotionCategorySerializer
     permission_classes = [permissions.IsAuthenticated]
 
+class PromotionImageCreateAPIView(generics.CreateAPIView):
+    queryset = PromotionImage.objects.all()
+    serializer_class = PromotionImageSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+class PromotionContactCreateAPIView(generics.CreateAPIView):
+    queryset = PromotionContact.objects.all()
+    serializer_class = PromotionContactSerializer
+    permission_classes = [permissions.IsAuthenticated]
 
 class PromotionCategoryListAPIView(generics.ListAPIView):
     queryset = PromotionCategory.objects.all()
@@ -41,6 +50,7 @@ class PromotionListAPIView(generics.ListAPIView):
     filterset_fields = ['title', 'description', 'type', 'address',
                         'category__title', 'type', 'discount', 'likes',
                         'company__name']
+    
 
     def get_queryset(self):
         queryset = Promotion.objects.annotate(Count('likes')).order_by('-likes__count')
@@ -170,3 +180,9 @@ class UserFavoritePromotionsAPIView(generics.ListAPIView):
     def get_queryset(self):
         user = self.request.user
         return Promotion.objects.filter(likes=user)
+
+
+class PromotionHintListAPIVIew(generics.ListAPIView):
+    queryset = Promotion.objects.all().order_by('likes')
+    serializer_class = PromotionHintSerializer
+    permission_classes = [permissions.AllowAny]

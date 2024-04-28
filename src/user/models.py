@@ -1,3 +1,5 @@
+import uuid
+
 from django.contrib.auth.models import AbstractUser, PermissionsMixin
 from django.db import models
 
@@ -6,6 +8,12 @@ from user.utils.utils import user_image_path, default_user_image_path
 
 
 class MyUser(AbstractUser, PermissionsMixin):
+    user_uuid = models.UUIDField(
+        primary_key=True,
+        unique=True,
+        default=uuid.uuid4,
+        editable=False,
+    )
     username = models.CharField(unique=True, max_length=50, null=True, blank=True)
     fullname = models.CharField(max_length=200, null=True, blank=True)
     email = models.EmailField(unique=True)
@@ -25,4 +33,4 @@ class MyUser(AbstractUser, PermissionsMixin):
         verbose_name_plural = 'users'
 
     def __str__(self):
-        return f'Пользователь {self.username if self.username else self.email}'
+        return f'Пользователь {self.username if self.username else self.email} uuid: {self.user_uuid}'
