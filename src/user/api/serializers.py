@@ -9,7 +9,7 @@ class AuthUserSerializer(serializers.Serializer):
 
     class Meta:
         model = MyUser
-        fields = ['user_uuid', 'email', 'password', 'username']
+        fields = ['id', 'email', 'password', 'username']
 
 
 class CustomUserSerializer(serializers.ModelSerializer):
@@ -17,4 +17,4 @@ class CustomUserSerializer(serializers.ModelSerializer):
     email = serializers.EmailField(required=False)
     class Meta:
         model = MyUser
-        fields = ['user_uuid', 'email', 'username', 'fullname', 'image']
+        fields = ['id', 'email', 'username', 'fullname', 'image']

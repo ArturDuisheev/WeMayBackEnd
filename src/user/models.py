@@ -8,7 +8,7 @@ from user.utils.utils import user_image_path, default_user_image_path
 
 
 class MyUser(AbstractUser, PermissionsMixin):
-    user_uuid = models.UUIDField(
+    id = models.UUIDField(
         primary_key=True,
         unique=True,
         default=uuid.uuid4,
@@ -33,4 +33,4 @@ class MyUser(AbstractUser, PermissionsMixin):
         verbose_name_plural = 'users'
 
     def __str__(self):
-        return f'Пользователь {self.username if self.username else self.email} uuid: {self.user_uuid}'
+        return f'Пользователь {self.username if self.username else self.email} uuid: {self.id}'

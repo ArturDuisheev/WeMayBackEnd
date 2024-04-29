@@ -8,24 +8,24 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt import tokens as _token
 
 
-def for_user(user: _token.AuthUser):
-    """
-    Returns an authorization token for the given user that will be provided
-    after authenticating the user's credentials.
-    """
-    user_id = getattr(user, 'user_uuid')
-    if not isinstance(user_id, int):
-        user_id = str(user_id)
+# def for_user(user: _token.AuthUser):
+#     """
+#     Returns an authorization token for the given user that will be provided
+#     after authenticating the user's credentials.
+#     """
+#     user_id = getattr(user, 'user_uuid')
+#     if not isinstance(user_id, int):
+#         user_id = str(user_id)
 
-    token = RefreshToken()
-    token[_token.api_settings.USER_ID_CLAIM] = user_id
+#     token = RefreshToken()
+#     token[_token.api_settings.USER_ID_CLAIM] = user_id
 
-    if _token.api_settings.CHECK_REVOKE_TOKEN:
-        token[_token.api_settings.REVOKE_TOKEN_CLAIM] = _token.get_md5_hash_password(
-            user.password
-        )
+#     if _token.api_settings.CHECK_REVOKE_TOKEN:
+#         token[_token.api_settings.REVOKE_TOKEN_CLAIM] = _token.get_md5_hash_password(
+#             user.password
+#         )
 
-    return token
+#     return token
 
 
 
@@ -47,7 +47,7 @@ class UserService(BaseService):
 
     @classmethod
     def generate_jwt_token(cls, user):
-        refresh = for_user(user)
+        refresh = RefreshToken.for_user(user)
         return {
             'refresh': str(refresh),
             'access': str(refresh.access_token),

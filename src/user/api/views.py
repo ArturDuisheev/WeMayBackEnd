@@ -14,7 +14,7 @@ from rest_framework import status, generics, permissions
 from core.settings.local import BASE_URL
 from user.api.serializers import AuthUserSerializer, CustomUserSerializer
 from user.models import MyUser
-from user.services import UserService, for_user
+from user.services import UserService
 
 
 class RegisterAPIView(APIView):
@@ -40,7 +40,7 @@ class RegisterAPIView(APIView):
                 return Response({
                     "message": "You have been successfully registered!",
                     "tokens": tokens,
-                    "uuid": user.user_uuid,
+                    "uuid": user.id,
                 }, status=status.HTTP_201_CREATED)
             else:
                 return Response({
@@ -60,9 +60,9 @@ class LoginAPIView(APIView):
         if user:
             login(request, user)
             return Response(data={"message": "Вход в систему выполнен успешно",
-                                  "access": str(for_user(user)),
-                                  "refresh": str(for_user(user)),
-                                  "uuid": user.user_uuid}, status=status.HTTP_200_OK)
+                                  "access": str(AccessToken.for_user(user)),
+                                  "refresh": str(RefreshToken.for_user(user)),
+                                  "uuid": user.id}, status=status.HTTP_200_OK)
         else:
             return Response({'detail': 'Неверные данные, попробуйте ещё раз!'}, status=status.HTTP_400_BAD_REQUEST)
 
@@ -165,21 +165,21 @@ class GoogleOAuthAPIView(APIView):
 
 
 class UserProfileAPIView(generics.RetrieveUpdateAPIView):
+    queryset = MyUser.objects.all()
     serializer_class = CustomUserSerializer
     permission_classes = [permissions.IsAuthenticated]
-    lookup_field = 'user_id'
 
-    def get_object(self):
-        return self.request.user
+    # def get_object(self):
+    #     return self.request.user
 
-    def retrieve(self, request, *args, **kwargs):
-        instance = self.get_object()
-        serializer = self.get_serializer(instance)
-        return Response(serializer.data)
+    # def retrieve(self, request, *args, **kwargs):
+    #     instance = self.get_object()
+    #     serializer = self.get_serializer(instance)
+    #     return Response(serializer.data)
 
-    def update(self, request, *args, **kwargs):
-        instance = self.get_object()
-        serializer = self.get_serializer(instance, data=request.data)
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
-        return Response(serializer.data)
+    # def update(self, request, *args, **kwargs):
+    #     instance = self.get_object()
+    #     serializer = self.get_serializer(instance, data=request.data)
+    #     serializer.is_valid(raise_exception=True)
+    #     serializer.save()
+    #     return Response(serializer.data)
