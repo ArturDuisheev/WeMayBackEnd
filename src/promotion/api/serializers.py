@@ -47,7 +47,7 @@ class PromotionSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Promotion
-        fields = ['title', 'image', 'description', 'company', 'company_name', 'category', 'category_name',
+        fields = ['id', 'title', 'image', 'description', 'company', 'company_name', 'category', 'category_name',
                   'type', 'new_price', 'old_price', 'discount', 'address', 'likes', 'end_date',
                   'instagram', 'facebook', 'whatsapp', 'website',
                   'is_daily', 'company_work_schedule']
@@ -97,6 +97,7 @@ class FavoritePromotionSerializer(serializers.ModelSerializer):
 
 
 class LikeCounterSerializer(serializers.ModelSerializer):
+
     class Meta:
         model = Promotion
         fields = (

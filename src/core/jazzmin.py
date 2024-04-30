@@ -17,7 +17,7 @@ JAZZMIN_SETTINGS = {
     "show_sidebar": True,
     "navigation_expanded": True,
     "changeform_format": "horizontal_tabs",
-    "language_chooser": True,
+    "language_chooser": False,
     "changeform_format_overrides": {
         "auth.user": "collapsible",
         "auth.group": "vertical_tabs",
