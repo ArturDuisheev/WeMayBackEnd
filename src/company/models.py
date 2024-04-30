@@ -4,37 +4,38 @@ from user.models import MyUser
 
 
 class Company(models.Model):
-    owner = models.ForeignKey(MyUser, on_delete=models.CASCADE, related_name='owner')
-    name = models.CharField(max_length=100, unique=True)
-    image = models.ImageField(upload_to=company_image_path)
-    discounts = models.PositiveIntegerField()
-    description = models.TextField()
+    owner = models.ForeignKey(MyUser, on_delete=models.CASCADE, related_name='owner', verbose_name='Владелец')
+    name = models.CharField(max_length=100, unique=True, verbose_name='Название')
+    image = models.ImageField(upload_to=company_image_path, verbose_name='Изображение')
+    discounts = models.PositiveIntegerField(verbose_name='Скидки')
+    description = models.TextField(verbose_name='Описание')
 
     class Meta:
         db_table = 'company'
-        verbose_name = 'company'
-        verbose_name_plural = 'companies'
+        verbose_name = 'Компания'
+        verbose_name_plural = 'Компании'
 
     def __str__(self):
         return f'Компания {self.name}'
 
 
 class Contact(models.Model):
-    company = models.ForeignKey(Company, on_delete=models.CASCADE)
-    title = models.CharField(max_length=50, unique=True)
-    value = models.CharField(max_length=250)
+    company = models.ForeignKey(Company, on_delete=models.CASCADE, verbose_name='Компания')
+    title = models.CharField(max_length=50, unique=True, verbose_name='Название')
+    value = models.CharField(max_length=250, verbose_name='Значение')
 
     class Meta:
         db_table = 'contact'
-        verbose_name = 'contact'
-        verbose_name_plural = 'contacts'
+        verbose_name = 'Контакт'
+        verbose_name_plural = 'Контакты'
 
     def __str__(self):
         return f'Контакт {self.title}'
 
 
 class WorkSchedule(models.Model):
-    company = models.OneToOneField(Company, on_delete=models.CASCADE, related_name='work_schedule')
+    company = models.OneToOneField(Company, on_delete=models.CASCADE, related_name='work_schedule',
+                                    verbose_name='Компания')
     MONDAY = 'Понедельник'
     TUESDAY = 'Вторник'
     WEDNESDAY = 'Среда'
@@ -51,20 +52,20 @@ class WorkSchedule(models.Model):
         (SATURDAY, 'Суббота'),
         (SUNDAY, 'Воскресенье'),
     ]
-    monday_start = models.TimeField(null=True, blank=True)
-    monday_end = models.TimeField(null=True, blank=True)
-    tuesday_start = models.TimeField(null=True, blank=True)
-    tuesday_end = models.TimeField(null=True, blank=True)
-    wednesday_start = models.TimeField(null=True, blank=True)
-    wednesday_end = models.TimeField(null=True, blank=True)
-    thursday_start = models.TimeField(null=True, blank=True)
-    thursday_end = models.TimeField(null=True, blank=True)
-    friday_start = models.TimeField(null=True, blank=True)
-    friday_end = models.TimeField(null=True, blank=True)
-    saturday_start = models.TimeField(null=True, blank=True)
-    saturday_end = models.TimeField(null=True, blank=True)
-    sunday_start = models.TimeField(null=True, blank=True)
-    sunday_end = models.TimeField(null=True, blank=True)
+    monday_start = models.TimeField(null=True, blank=True, verbose_name='Начало Понедельника')
+    monday_end = models.TimeField(null=True, blank=True, verbose_name='Конец Понедельника')
+    tuesday_start = models.TimeField(null=True, blank=True, verbose_name='Начало Вторника')
+    tuesday_end = models.TimeField(null=True, blank=True, verbose_name='Конец Вторника')
+    wednesday_start = models.TimeField(null=True, blank=True, verbose_name='Начало Среды')
+    wednesday_end = models.TimeField(null=True, blank=True, verbose_name='Конец Среды')
+    thursday_start = models.TimeField(null=True, blank=True, verbose_name='Начало Четверга')
+    thursday_end = models.TimeField(null=True, blank=True, verbose_name='Конец Четверга')
+    friday_start = models.TimeField(null=True, blank=True, verbose_name='Начало Пятницы')
+    friday_end = models.TimeField(null=True, blank=True, verbose_name='Конец Пятницы')
+    saturday_start = models.TimeField(null=True, blank=True, verbose_name='Начало Субботы')
+    saturday_end = models.TimeField(null=True, blank=True, verbose_name='Конец Субботы')
+    sunday_start = models.TimeField(null=True, blank=True, verbose_name='Начало Воскресенья')
+    sunday_end = models.TimeField(null=True, blank=True, verbose_name='Конец Воскресенья')
 
     def __str__(self):
         return f'Рабочее время для {self.company}'

@@ -2,6 +2,7 @@ import os
 from datetime import timedelta
 from pathlib import Path
 from core.env_reader import env
+from ..jazzmin import *
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 

@@ -43,21 +43,23 @@ def validate_svg_size(value):
 
 
 class PromotionCategory(models.Model):
-    title = models.CharField(max_length=100)
-    image = models.ImageField(upload_to=category_image_path, null=True)
+    title = models.CharField(max_length=100, verbose_name='Название')
+    image = models.ImageField(upload_to=category_image_path, null=True, verbose_name='Изображение')
     icon = models.FileField(upload_to=category_icon_path, null=True, blank=True,
-                            validators=[FileExtensionValidator(allowed_extensions=['svg']), validate_svg_size])
+                            validators=[FileExtensionValidator(allowed_extensions=['svg']), validate_svg_size],
+                            verbose_name='Иконка')
     parent_category = models.ForeignKey('self', null=True, blank=True,
                                         on_delete=models.CASCADE,
-                                        related_name='subcategories')
-    
+                                        related_name='subcategories',
+                                        verbose_name='Родительская категория')
+
     def __str__(self):
         return f'Категория {self.title}'
 
     class Meta:
         db_table = 'promotion_category'
-        verbose_name = 'promotion_category'
-        verbose_name_plural = 'promotion_categories'
+        verbose_name = 'Категория акции'
+        verbose_name_plural = 'Категории акций'
 
 
 class Promotion(models.Model):
@@ -68,66 +70,67 @@ class Promotion(models.Model):
         ('Draw', 'Розыгрыш'),
     )
     category = models.ForeignKey(PromotionCategory, null=True, blank=True,
-                                 on_delete=models.CASCADE, related_name='category')
-    company = models.ForeignKey(Company, on_delete=models.CASCADE)
-    title = models.CharField(max_length=100)
-    image = models.ImageField(upload_to='promotion/%Y-%m-%d/', blank=True, null=True)
-    slider_image = models.ImageField(upload_to='promotion/slides/%Y-%m-%d/', blank=True, null=True)
-    old_price = models.PositiveIntegerField(null=True)
-    new_price = models.PositiveIntegerField()
-    discount = models.PositiveIntegerField(null=True, validators=[validate_discount])
-    description = models.TextField()
-    type = models.CharField(max_length=45, choices=PROMOTION_CHOICES, default=PROMOTION_CHOICES[0][0])
-    address = models.CharField(max_length=300, null=True, blank=True)
-    likes = models.ManyToManyField(MyUser, related_name='liked_promotions', blank=True, null=True)
-    end_date = models.DateTimeField(auto_now=True)
-    is_daily = models.BooleanField(default=False)
-    instagram = models.URLField(blank=True, null=True)
-    facebook = models.URLField(blank=True, null=True)
-    whatsapp = models.URLField(blank=True, null=True)
-    website = models.URLField(blank=True, null=True)
-    user = models.OneToOneField(MyUser, on_delete=models.CASCADE, related_name='users', blank=True, null=True)
-
+                                 on_delete=models.CASCADE, related_name='category',
+                                 verbose_name='Категория')
+    company = models.ForeignKey(Company, on_delete=models.CASCADE, verbose_name='Компания')
+    title = models.CharField(max_length=100, verbose_name='Название')
+    image = models.ImageField(upload_to='promotion/%Y-%m-%d/', blank=True, null=True, verbose_name='Изображение')
+    slider_image = models.ImageField(upload_to='promotion/slides/%Y-%m-%d/', blank=True, null=True,
+                                     verbose_name='Изображение для слайдера')
+    old_price = models.PositiveIntegerField(null=True, verbose_name='Старая цена')
+    new_price = models.PositiveIntegerField(verbose_name='Новая цена')
+    discount = models.PositiveIntegerField(null=True, validators=[validate_discount], verbose_name='Скидка')
+    description = models.TextField(verbose_name='Описание')
+    type = models.CharField(max_length=45, choices=PROMOTION_CHOICES, default=PROMOTION_CHOICES[0][0],
+                            verbose_name='Тип')
+    address = models.CharField(max_length=300, null=True, blank=True, verbose_name='Адрес')
+    likes = models.ManyToManyField(MyUser, related_name='liked_promotions', blank=True, null=True,
+                                   verbose_name='Лайки')
+    end_date = models.DateTimeField(auto_now=True, verbose_name='Дата окончания')
+    is_daily = models.BooleanField(default=False, verbose_name='Ежедневно')
+    instagram = models.URLField(blank=True, null=True, verbose_name='Instagram')
+    facebook = models.URLField(blank=True, null=True, verbose_name='Facebook')
+    whatsapp = models.URLField(blank=True, null=True, verbose_name='WhatsApp')
+    website = models.URLField(blank=True, null=True, verbose_name='Веб-сайт')
+    user = models.OneToOneField(MyUser, on_delete=models.CASCADE, related_name='users', blank=True, null=True,
+                                verbose_name='Пользователь')
 
     def __str__(self):
-        return (f'Акция {self.title} с категорией {self.category.title}')
+        return f'Акция {self.title} с категорией {self.category.title}'
 
     class Meta:
         db_table = 'promotion'
-        verbose_name = 'promotion'
-        verbose_name_plural = 'promotions'
+        verbose_name = 'Акция'
+        verbose_name_plural = 'Акции'
 
 
 class PromotionImage(models.Model):
-    title = models.CharField(max_length=30)
-    image = models.ImageField(upload_to=category_image_path, null=True)
-    promotion = models.ForeignKey(Promotion, on_delete=models.CASCADE, related_name='images')
+    title = models.CharField(max_length=30, verbose_name='Название')
+    image = models.ImageField(upload_to=category_image_path, null=True, verbose_name='Изображение')
+    promotion = models.ForeignKey(Promotion, on_delete=models.CASCADE, related_name='images',
+                                  verbose_name='Акция')
 
     def __str__(self):
-        return f'Фото {self.title} для '
+        return f'Фото для {self.title} '
 
     class Meta:
         db_table = 'promotion_image'
-        verbose_name = 'promotion_image'
-        verbose_name_plural = 'promotion_images'
+        verbose_name = 'Изображение акции'
+        verbose_name_plural = 'Изображения акций'
 
 
 class PromotionContact(models.Model):
     phone = PhoneNumberField('Номер телефона')
     promotion = models.ForeignKey(
-        Promotion, 
-        on_delete=models.CASCADE, 
+        Promotion,
+        on_delete=models.CASCADE,
         related_name='promotion_contact',
         verbose_name='К какой акции относиться'
-          )
-    
+    )
+
     def __str__(self) -> str:
         return f'номер: {self.phone}, акция: {self.promotion}'
-    
+
     class Meta:
         verbose_name = 'Номер телефона'
         verbose_name_plural = verbose_name
-
-
-
-
