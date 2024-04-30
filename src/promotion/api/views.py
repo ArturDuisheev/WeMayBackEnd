@@ -1,5 +1,6 @@
 from rest_framework.response import Response
 from rest_framework import generics, status, filters, permissions
+from rest_framework.views import APIView
 
 from django_filters.rest_framework import DjangoFilterBackend
 
@@ -51,8 +52,7 @@ class PromotionListAPIView(generics.ListAPIView):
         filter = self.kwargs.get('filter')
         return get_filtered_promotions(filter)
 
-class LikeCounterView(generics.CreateAPIView):
-    # serializer_class = LikeCounterSerializer
+class LikeCounterView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def get(self, request, *args, **kwargs):
@@ -61,13 +61,6 @@ class LikeCounterView(generics.CreateAPIView):
         if like_count is None:
             return Response({'message': 'Акция не найдена'}, status=status.HTTP_404_NOT_FOUND)
         return Response({'likes_count': like_count}, status=status.HTTP_200_OK)
-
-    def delete(self, request, *args, **kwargs):
-        promotion_id = kwargs.get('pk')
-        success, message = toggle_like_status(promotion_id, request.user)
-        if not success:
-            return Response({'message': message}, status=status.HTTP_404_NOT_FOUND)
-        return Response({'message': message}, status=status.HTTP_204_NO_CONTENT)
 
     def post(self, request, *args, **kwargs):
         promotion_id = kwargs.get('pk')
