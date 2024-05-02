@@ -1,9 +1,21 @@
 from django.contrib import admin
 from .models import PromotionCategory, Promotion, PromotionImage, PromotionContact
 
-admin.site.register(PromotionCategory)
 admin.site.register(Promotion.likes.through)
-admin.site.register(PromotionContact)
+
+
+@admin.register(PromotionCategory)
+class PromotionCategoryAdmin(admin.ModelAdmin):
+    list_display = ('title', 'image', 'icon', 'parent_category')
+    search_fields = ['title']
+    list_filter = ['parent_category']
+
+
+@admin.register(PromotionContact)
+class PromotionContactAdmin(admin.ModelAdmin):
+    list_display = ('phone', 'promotion')
+    search_fields = ['phone']
+    list_filter = ['promotion']
 
 
 class PromotionImageInline(admin.TabularInline):

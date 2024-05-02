@@ -67,5 +67,9 @@ class WorkSchedule(models.Model):
     sunday_start = models.TimeField(null=True, blank=True, verbose_name='Начало Воскресенья')
     sunday_end = models.TimeField(null=True, blank=True, verbose_name='Конец Воскресенья')
 
+    class Meta:
+        verbose_name = 'Рабочее время'
+        verbose_name_plural = 'Рабочее время'
+
     def __str__(self):
         return f'Рабочее время для {self.company}'
