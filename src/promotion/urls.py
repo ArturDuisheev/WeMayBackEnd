@@ -5,7 +5,6 @@ urlpatterns = [
     path('category/create/', views.PromotionCategoryCreateAPIView.as_view(), name='category-create'),
     path('category/all/', views.PromotionCategoryListAPIView.as_view(), name='category'),
     path('category/<int:pk>/', views.PromotionCategoryDetailAPIView.as_view(), name='category-detail'),
-    path('images/add/', views.PromotionImageCreateAPIView.as_view(), name='promotion-image-create'),
     path('contact/add/', views.PromotionContactCreateAPIView.as_view(), name='promotion-contact-create'),
     # Path filter (free, end_soon, daily, liked) are used to filter the objects by these fields
     path('all/<str:filter>/', views.PromotionListAPIView.as_view(), name='promotion-filter'),

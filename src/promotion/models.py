@@ -74,7 +74,6 @@ class Promotion(models.Model):
                                  verbose_name='Категория')
     company = models.ForeignKey(Company, on_delete=models.CASCADE, verbose_name='Компания')
     title = models.CharField(max_length=100, verbose_name='Название')
-    image = models.ImageField(upload_to='promotion/%Y-%m-%d/', blank=True, null=True, verbose_name='Изображение')
     slider_image = models.ImageField(upload_to='promotion/slides/%Y-%m-%d/', blank=True, null=True,
                                      verbose_name='Изображение для слайдера')
     old_price = models.PositiveIntegerField(null=True, verbose_name='Старая цена')
@@ -86,7 +85,7 @@ class Promotion(models.Model):
     address = models.CharField(max_length=300, null=True, blank=True, verbose_name='Адрес')
     likes = models.ManyToManyField(MyUser, related_name='liked_promotions', blank=True, null=True,
                                    verbose_name='Лайки')
-    end_date = models.DateTimeField(auto_now=True, verbose_name='Дата окончания')
+    end_date = models.DateTimeField(verbose_name='Дата окончания')
     is_daily = models.BooleanField(default=False, verbose_name='Ежедневно')
     instagram = models.URLField(blank=True, null=True, verbose_name='Instagram')
     facebook = models.URLField(blank=True, null=True, verbose_name='Facebook')
@@ -96,7 +95,10 @@ class Promotion(models.Model):
                                 verbose_name='Пользователь')
 
     def __str__(self):
-        return f'Акция {self.title} с категорией {self.category.title}'
+        if self.category:
+            return f'Акция {self.title} с категорией {self.category.title}'
+        else:
+            return f'Акция {self.title}'
 
     class Meta:
         db_table = 'promotion'

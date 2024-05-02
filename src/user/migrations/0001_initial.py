@@ -27,7 +27,7 @@ class Migration(migrations.Migration):
                 ('username', models.CharField(blank=True, max_length=50, null=True, unique=True)),
                 ('fullname', models.CharField(blank=True, max_length=200, null=True)),
                 ('email', models.EmailField(max_length=254, unique=True)),
-                ('image', models.ImageField(blank=True, default=user.utils.utils.default_user_image_path, upload_to=user.utils.utils.user_image_path)),
+                ('image', models.ImageField(blank=True, upload_to=user.utils.utils.user_image_path)),
                 ('is_active', models.BooleanField(default=True)),
                 ('is_staff', models.BooleanField(default=False)),
                 ('is_superuser', models.BooleanField(default=False)),

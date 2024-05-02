@@ -6,10 +6,10 @@ from django_filters.rest_framework import DjangoFilterBackend
 
 from promotion.models import PromotionCategory, Promotion, PromotionImage, PromotionContact
 from promotion.paginations import CustomPagePagination
-from .serializers import PromotionCategorySerializer, PromotionSerializer, MyPromotionSerializer, PromotionContactSerializer, PromotionImageSerializer, PromotionHintSerializer, LikeCounterSerializer
+from .serializers import PromotionCategorySerializer, PromotionSerializer, MyPromotionSerializer, \
+    PromotionContactSerializer, PromotionImageSerializer, PromotionHintSerializer, LikeCounterSerializer
 from promotion.services import get_filtered_promotions, get_like_count, toggle_like_status
 from promotion.api import permissons as pr_per
-
 
 
 class PromotionListAPIView(generics.ListAPIView):
@@ -28,7 +28,10 @@ class PromotionListAPIView(generics.ListAPIView):
 
 class PromotionCreateAPIView(generics.CreateAPIView):
     serializer_class = PromotionSerializer
-    permission_classes = [permissions.AllowAny]
+    permission_classes = [permissions.IsAuthenticated]
+
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
 
 
 class PromotionDetailAPIView(generics.RetrieveDestroyAPIView):
@@ -52,6 +55,7 @@ class PromotionListAPIView(generics.ListAPIView):
         filter = self.kwargs.get('filter')
         return get_filtered_promotions(filter)
 
+
 class LikeCounterView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
@@ -74,15 +78,12 @@ class PromotionCategoryCreateAPIView(generics.CreateAPIView):
     serializer_class = PromotionCategorySerializer
     permission_classes = [permissions.IsAuthenticated]
 
-class PromotionImageCreateAPIView(generics.CreateAPIView):
-    queryset = PromotionImage.objects.all()
-    serializer_class = PromotionImageSerializer
-    permission_classes = [permissions.IsAuthenticated]
 
 class PromotionContactCreateAPIView(generics.CreateAPIView):
     queryset = PromotionContact.objects.all()
     serializer_class = PromotionContactSerializer
     permission_classes = [permissions.IsAuthenticated]
+
 
 class PromotionCategoryListAPIView(generics.ListAPIView):
     queryset = PromotionCategory.objects.all()

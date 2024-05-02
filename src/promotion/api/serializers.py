@@ -3,6 +3,7 @@ from rest_framework import serializers
 
 from company.models import WorkSchedule
 from promotion.models import Promotion, PromotionImage, PromotionCategory, Company, PromotionContact
+from user.models import MyUser
 
 
 class WorkScheduleSerializer(serializers.Serializer):
@@ -11,23 +12,25 @@ class WorkScheduleSerializer(serializers.Serializer):
         fields = '__all__'
 
 
-class PromotionImageSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = PromotionImage
-        fields = '__all__'
-
 class PromotionContactSerializer(serializers.ModelSerializer):
     class Meta:
         model = PromotionContact
         fields = '__all__'
 
 
+class PromotionImageSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = PromotionImage
+        fields = '__all__'
+
+
 class PromotionCategorySerializer(serializers.ModelSerializer):
     count_category = serializers.SerializerMethodField('get_count_category')
+    images = PromotionImageSerializer(many=True, required=False, read_only=True)
 
     class Meta:
         model = PromotionCategory
-        fields = ('title', 'image', 'icon', 'parent_category', 'count_category')
+        fields = ('title', 'images', 'icon', 'parent_category', 'count_category')
 
     def get_count_category(self, obj):
         return Promotion.objects.only('category').count()
@@ -44,13 +47,19 @@ class PromotionSerializer(serializers.ModelSerializer):
     company_name = serializers.CharField(source='company.name', read_only=True)
     category_name = serializers.CharField(source='category.name', read_only=True)
     end_date = serializers.DateTimeField(format='%Y-%m-%d T%H:%M:%S')
+    images = PromotionImageSerializer(many=True, required=False, read_only=True)
+    likes = serializers.PrimaryKeyRelatedField(queryset=MyUser.objects.all(), many=True, required=False)
+    upload_images = serializers.ListField(
+        child=serializers.ImageField(max_length=1000000, allow_empty_file=False, use_url=False),
+        write_only=True, required=False
+    )
 
     class Meta:
         model = Promotion
-        fields = ['id', 'title', 'image', 'description', 'company', 'company_name', 'category', 'category_name',
+        fields = ['id', 'title', 'slider_image', 'description', 'company', 'company_name', 'category', 'category_name',
                   'type', 'new_price', 'old_price', 'discount', 'address', 'likes', 'end_date',
-                  'instagram', 'facebook', 'whatsapp', 'website',
-                  'is_daily', 'company_work_schedule']
+                  'instagram', 'facebook', 'whatsapp', 'website', 'is_daily', 'company_work_schedule', 'images',
+                  'upload_images']
 
     def get_company_work_schedule(self, obj):
         if obj.company:
@@ -59,17 +68,28 @@ class PromotionSerializer(serializers.ModelSerializer):
             return work_schedule_data
 
     def create(self, validated_data):
-        return Promotion.objects.create(**validated_data)
+        images_data = validated_data.pop('upload_images', [])
+        likes_data = validated_data.pop('likes', None)
+        promotion = Promotion.objects.create(**validated_data)
+
+        for image_data in images_data:
+            PromotionImage.objects.create(promotion=promotion, image=image_data)
+
+        if likes_data:
+            promotion.likes.set(likes_data)
+
+        return promotion
 
 
 class MyPromotionSerializer(serializers.ModelSerializer):
+    images = PromotionImageSerializer(many=True, required=False, read_only=True)
     like_count = serializers.SerializerMethodField('get_like_count')
 
     class Meta:
         model = Promotion
         fields = (
             'id',
-            'image',
+            'images',
             'discount',
             'title',
             'old_price',
@@ -83,11 +103,13 @@ class MyPromotionSerializer(serializers.ModelSerializer):
 
 
 class FavoritePromotionSerializer(serializers.ModelSerializer):
+    images = PromotionImageSerializer(many=True, required=False, read_only=True)
+
     class Meta:
         model = Promotion
         fields = (
             'id',
-            'image',
+            'images',
             'discount',
             'title',
             'old_price',
@@ -97,13 +119,13 @@ class FavoritePromotionSerializer(serializers.ModelSerializer):
 
 
 class LikeCounterSerializer(serializers.ModelSerializer):
-
     class Meta:
         model = Promotion
         fields = (
             'id',
 
         )
+
 
 class PromotionHintSerializer(serializers.ModelSerializer):
     class Meta:
