@@ -28,11 +28,11 @@ class RegisterAPIView(APIView):
             password = user_data.get('password')
             username = user_data.get('username') if None else user_data.get('email')
 
+            hashed_password = make_password(password)
 
-            # Create the user
             user, created = MyUser.objects.get_or_create(
                 email=email,
-                defaults={'username': username, 'password': password}
+                defaults={'username': username, 'password': hashed_password}
             )
 
             if created:
@@ -50,7 +50,6 @@ class RegisterAPIView(APIView):
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-
 class LoginAPIView(APIView):
     def post(self, request):
         serializer = AuthUserSerializer(data=request.data)
@@ -59,22 +58,25 @@ class LoginAPIView(APIView):
 
         if user:
             login(request, user)
-            return Response(data={"message": "Вход в систему выполнен успешно",
-                                  "access": str(AccessToken.for_user(user)),
-                                  "refresh": str(RefreshToken.for_user(user)),
-                                  "uuid": user.id}, status=status.HTTP_200_OK)
+            access_token = AccessToken.for_user(user)
+            refresh_token = RefreshToken.for_user(user)
+            return Response(data={
+                "message": "Вход в систему выполнен успешно",
+                "tokens": {
+                    "access": str(access_token),
+                    "refresh": str(refresh_token)
+                },
+                "uuid": str(user.id)
+            }, status=status.HTTP_200_OK)
         else:
             return Response({'detail': 'Неверные данные, попробуйте ещё раз!'}, status=status.HTTP_400_BAD_REQUEST)
-
-
-
 
 
 class LogoutAPIView(APIView):
     permission_classes = [IsAuthenticated]
 
     def post(self, request):
-        logout(request.user)
+        logout(request)
         return Response({"message": "Logout Successful"}, status=status.HTTP_200_OK)
 
 
