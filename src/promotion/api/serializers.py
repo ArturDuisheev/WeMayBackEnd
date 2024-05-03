@@ -6,10 +6,12 @@ from promotion.models import Promotion, PromotionImage, PromotionCategory, Compa
 from user.models import MyUser
 
 
-class WorkScheduleSerializer(serializers.Serializer):
+class WorkScheduleSerializer(serializers.ModelSerializer):
     class Meta:
         model = WorkSchedule
-        fields = '__all__'
+        fields = ('monday_start', 'monday_end', 'tuesday_start', 'tuesday_end', 'wednesday_start', 'wednesday_end',
+                  'thursday_start', 'thursday_end', 'friday_start', 'friday_end', 'saturday_start', 'saturday_end',
+                  'sunday_start', 'sunday_end')
 
 
 class PromotionContactSerializer(serializers.ModelSerializer):
