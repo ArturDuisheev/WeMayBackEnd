@@ -51,7 +51,7 @@ class PromotionSerializer(serializers.ModelSerializer):
     likes = serializers.PrimaryKeyRelatedField(queryset=MyUser.objects.all(), many=True, required=False)
     upload_images = serializers.ListField(
         child=serializers.ImageField(max_length=1000000, allow_empty_file=False, use_url=False),
-        write_only=True, required=False
+        write_only=True
     )
 
     class Meta:
@@ -62,14 +62,20 @@ class PromotionSerializer(serializers.ModelSerializer):
                   'upload_images']
 
     def get_company_work_schedule(self, obj):
-        if obj.company:
+        if obj.company and hasattr(obj.company, 'work_schedule'):
             work_schedule = obj.company.work_schedule
             work_schedule_data = WorkScheduleSerializer(work_schedule).data
             return work_schedule_data
+        return None
 
     def create(self, validated_data):
         images_data = validated_data.pop('upload_images', [])
         likes_data = validated_data.pop('likes', None)
+        user = validated_data.get('user')
+
+        if Promotion.objects.filter(user=user).exists():
+            raise serializers.ValidationError("Акция для этого пользователя уже существует")
+
         promotion = Promotion.objects.create(**validated_data)
 
         for image_data in images_data:
