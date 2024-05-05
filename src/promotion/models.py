@@ -72,7 +72,7 @@ class Promotion(models.Model):
     category = models.ForeignKey(PromotionCategory, null=True, blank=True,
                                  on_delete=models.CASCADE, related_name='category',
                                  verbose_name='Категория')
-    company = models.ForeignKey(Company, on_delete=models.CASCADE, verbose_name='Компания')
+    company = models.ForeignKey(Company, on_delete=models.CASCADE, null=True, blank=True, verbose_name='Компания')
     title = models.CharField(max_length=100, verbose_name='Название')
     slider_image = models.ImageField(upload_to='promotion/slides/%Y-%m-%d/', blank=True, null=True,
                                      verbose_name='Изображение для слайдера')

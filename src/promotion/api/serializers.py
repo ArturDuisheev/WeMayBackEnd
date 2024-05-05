@@ -38,12 +38,6 @@ class PromotionCategorySerializer(serializers.ModelSerializer):
         return Promotion.objects.only('category').count()
 
 
-class CompanySerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Company
-        fields = ['name', ]
-
-
 class PromotionSerializer(serializers.ModelSerializer):
     company_work_schedule = serializers.SerializerMethodField(read_only=True)
     company_name = serializers.CharField(source='company.name', read_only=True)
@@ -62,6 +56,10 @@ class PromotionSerializer(serializers.ModelSerializer):
                   'type', 'new_price', 'old_price', 'discount', 'likes', 'end_date',
                   'instagram', 'facebook', 'whatsapp', 'website', 'is_daily', 'company_work_schedule', 'images',
                   'upload_images']
+
+    extra_kwargs = {
+        'company': {'required': False}
+    }
 
     def get_company_work_schedule(self, obj):
         if obj.company and hasattr(obj.company, 'work_schedule'):
