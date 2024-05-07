@@ -30,9 +30,8 @@ class PromotionCreateAPIView(generics.CreateAPIView):
     serializer_class = PromotionSerializer
     permission_classes = [permissions.IsAuthenticated]
 
-    def get_queryset(self):
-        user = self.request.user
-        return Promotion.objects.filter(user=user)
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
 
 
 class PromotionDetailAPIView(generics.RetrieveDestroyAPIView):
