@@ -35,7 +35,7 @@ class Contact(models.Model):
 
 class WorkSchedule(models.Model):
     company = models.OneToOneField(Company, on_delete=models.CASCADE, related_name='work_schedule',
-                                    verbose_name='Компания')
+                                   verbose_name='Компания')
     MONDAY = 'Понедельник'
     TUESDAY = 'Вторник'
     WEDNESDAY = 'Среда'

@@ -4,10 +4,10 @@ from rest_framework.views import APIView
 
 from django_filters.rest_framework import DjangoFilterBackend
 
-from promotion.models import PromotionCategory, Promotion, PromotionImage, PromotionContact
+from promotion.models import PromotionCategory, Promotion, PromotionContact
 from promotion.paginations import CustomPagePagination
 from .serializers import PromotionCategorySerializer, PromotionSerializer, MyPromotionSerializer, \
-    PromotionContactSerializer, PromotionImageSerializer, PromotionHintSerializer, LikeCounterSerializer
+    PromotionContactSerializer, PromotionHintSerializer
 from promotion.services import get_filtered_promotions, get_like_count, toggle_like_status, toggle_favorite_status, \
     get_favorite_count
 from promotion.api import permissons as pr_per

@@ -34,8 +34,8 @@ class ReviewCreateAPIVIew(generics.CreateAPIView):
         if not user.username or user.username == '':
             return Response(
                 {'message':
-                     'Вы не можете оставлять отзывы без \'username\'.'
-                     ' Пожалуйста заполните это поле'
+                    'Вы не можете оставлять отзывы без \'username\'.'
+                    ' Пожалуйста заполните это поле'
                  }, status=status.HTTP_400_BAD_REQUEST
             )
 

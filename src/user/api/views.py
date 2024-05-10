@@ -2,7 +2,6 @@ from django.contrib.auth import logout
 from django.contrib.auth.hashers import make_password
 from django.http import HttpResponseRedirect
 from django.contrib.auth import authenticate, login
-from drf_yasg.utils import swagger_auto_schema
 
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView

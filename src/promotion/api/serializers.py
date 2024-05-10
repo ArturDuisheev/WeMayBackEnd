@@ -1,8 +1,7 @@
-from django.shortcuts import get_object_or_404
 from rest_framework import serializers
 
 from company.models import WorkSchedule
-from promotion.models import Promotion, PromotionImage, PromotionCategory, Company, PromotionContact
+from promotion.models import Promotion, PromotionImage, PromotionCategory, PromotionContact
 from user.models import MyUser
 
 

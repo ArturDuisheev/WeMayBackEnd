@@ -20,5 +20,3 @@ DATABASES = {
         'PORT': env('POSTGRES_PORT', cast=int),
     }
 }
-
-

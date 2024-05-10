@@ -10,11 +10,11 @@ schema_view = get_schema_view(
         default_version='v1',
         description="API for WeMay project",
         terms_of_service="https://www.example.com/terms/",
-        contact=openapi.Contact(email="myworkingartir@gmail.com",),
+        contact=openapi.Contact(email="myworkingartir@gmail.com", ),
         license=openapi.License(name="License"),
     ),
     public=True,
-    permission_classes=[permissions.AllowAny,]
+    permission_classes=[permissions.AllowAny, ]
 )
 
 urlpatterns = [
@@ -48,4 +48,5 @@ urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 if settings.DEBUG:
     import debug_toolbar
+
     urlpatterns += [path("__debug__/", include(debug_toolbar.urls))]
