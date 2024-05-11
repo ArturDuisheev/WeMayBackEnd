@@ -43,7 +43,7 @@ class CompanyCreateAPIView(generics.CreateAPIView):
         serializer.save()
 
         return Response(
-            {'message': 'Вы успешно создали компанию'},
+            serializer.data,
             status=status.HTTP_201_CREATED
         )
 
