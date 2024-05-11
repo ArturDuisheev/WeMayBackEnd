@@ -10,4 +10,6 @@ urlpatterns = [
     path('<int:pk>/contact/all/', views.ContactListAPIView.as_view()),
     path('<int:pk>/contact/create/', views.ContactCreateAPIView.as_view()),
     path('contact/<int:pk>/', views.ContactDetailAPIView.as_view()),
+
+    path('work_schedule/create/', views.WorkScheduleCreateAPIView.as_view()),
 ]

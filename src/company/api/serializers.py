@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from company.models import Company, Contact
+from company.models import Company, Contact, WorkSchedule
 from promotion.models import Promotion
 
 
@@ -28,3 +28,12 @@ class ContactSerializer(serializers.ModelSerializer):
         representation = super().to_representation(instance)
         representation['company_name'] = instance.company.name
         return representation
+
+
+class WorkScheduleSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = WorkSchedule
+        fields = (
+            '__all__'
+        )

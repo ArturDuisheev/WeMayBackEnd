@@ -4,8 +4,8 @@ from rest_framework import generics, permissions, filters, status
 from rest_framework.response import Response
 
 from promotion.paginations import CustomPagePagination
-from .serializers import CompanySerializer, ContactSerializer
-from company.models import Company, Contact
+from .serializers import CompanySerializer, ContactSerializer, WorkScheduleSerializer
+from company.models import Company, Contact, WorkSchedule
 
 
 
@@ -95,3 +95,9 @@ class CompanyDetailAPIView(generics.RetrieveUpdateDestroyAPIView):
             {'message': 'У вас нет разрешения на удаление этой компании'},
             status=status.HTTP_403_FORBIDDEN
         )
+
+
+class WorkScheduleCreateAPIView(generics.ListCreateAPIView):
+    queryset = WorkSchedule.objects.all()
+    serializer_class = WorkScheduleSerializer
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly, ]
