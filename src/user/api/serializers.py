@@ -15,6 +15,7 @@ class AuthUserSerializer(serializers.Serializer):
 class CustomUserSerializer(serializers.ModelSerializer):
     # id = serializers.ReadOnlyField()
     email = serializers.EmailField(required=False)
+
     class Meta:
         model = MyUser
         fields = ['id', 'email', 'username', 'fullname', 'image']

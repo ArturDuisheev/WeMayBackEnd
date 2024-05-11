@@ -4,11 +4,12 @@ from rest_framework.views import APIView
 
 from django_filters.rest_framework import DjangoFilterBackend
 
-from promotion.models import PromotionCategory, Promotion, PromotionImage, PromotionContact
+from promotion.models import PromotionCategory, Promotion, PromotionContact
 from promotion.paginations import CustomPagePagination
 from .serializers import PromotionCategorySerializer, PromotionSerializer, MyPromotionSerializer, \
-    PromotionContactSerializer, PromotionImageSerializer, PromotionHintSerializer, LikeCounterSerializer
-from promotion.services import get_filtered_promotions, get_like_count, toggle_like_status
+    PromotionContactSerializer, PromotionHintSerializer
+from promotion.services import get_filtered_promotions, get_like_count, toggle_like_status, toggle_favorite_status, \
+    get_favorite_count
 from promotion.api import permissons as pr_per
 
 
@@ -56,22 +57,37 @@ class PromotionListAPIView(generics.ListAPIView):
         return get_filtered_promotions(filter)
 
 
-class LikeCounterView(APIView):
+class CounterBaseView(APIView):
     permission_classes = [permissions.IsAuthenticated]
+    action = None
+    count_function = None
+    toggle_function = None
 
     def get(self, request, *args, **kwargs):
         promotion_id = kwargs.get('pk')
-        like_count = get_like_count(promotion_id)
-        if like_count is None:
+        count = self.count_function(promotion_id)
+        if count is None:
             return Response({'message': 'Акция не найдена'}, status=status.HTTP_404_NOT_FOUND)
-        return Response({'likes_count': like_count}, status=status.HTTP_200_OK)
+        return Response({f'{self.action}_count': count}, status=status.HTTP_200_OK)
 
     def post(self, request, *args, **kwargs):
         promotion_id = kwargs.get('pk')
-        success, message = toggle_like_status(promotion_id, request.user)
+        success, message = self.toggle_function(promotion_id, request.user)
         if not success:
             return Response({'message': message}, status=status.HTTP_404_NOT_FOUND)
         return Response({'message': message}, status=status.HTTP_201_CREATED)
+
+
+class LikeCounterView(CounterBaseView):
+    action = 'like'
+    count_function = staticmethod(get_like_count)
+    toggle_function = staticmethod(toggle_like_status)
+
+
+class FavoriteCounterView(CounterBaseView):
+    action = 'favorite'
+    count_function = staticmethod(get_favorite_count)
+    toggle_function = staticmethod(toggle_favorite_status)
 
 
 class PromotionCategoryCreateAPIView(generics.CreateAPIView):
@@ -113,13 +129,22 @@ class MyPromotionDelete(generics.DestroyAPIView):
     lookup_field = 'pk'
 
 
-class UserFavoritePromotionsAPIView(generics.ListAPIView):
+class UserLikePromotionsAPIView(generics.ListAPIView):
     serializer_class = PromotionSerializer
     permission_classes = [pr_per.IsOwnerOrReadOnly]
 
     def get_queryset(self):
         user = self.request.user
         return Promotion.objects.filter(likes=user)
+
+
+class UserFavoritePromotionsAPIView(generics.ListAPIView):
+    serializer_class = PromotionSerializer
+    permission_classes = [pr_per.IsOwnerOrReadOnly]
+
+    def get_queryset(self):
+        user = self.request.user
+        return Promotion.objects.filter(favorites=user)
 
 
 class PromotionHintListAPIVIew(generics.ListAPIView):

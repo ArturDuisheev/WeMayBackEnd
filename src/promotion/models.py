@@ -84,6 +84,8 @@ class Promotion(models.Model):
     address = models.CharField(max_length=300, null=True, blank=True, verbose_name='Адрес')
     likes = models.ManyToManyField(MyUser, related_name='liked_promotions', blank=True, null=True,
                                    verbose_name='Лайки')
+    favorites = models.ManyToManyField(MyUser, related_name='favorite_promotions', blank=True, null=True,
+                                       verbose_name='Избранное')
     end_date = models.DateTimeField(verbose_name='Дата окончания')
     is_daily = models.BooleanField(default=False, verbose_name='Ежедневно')
     instagram = models.URLField(blank=True, null=True, verbose_name='Instagram')

@@ -28,7 +28,6 @@ from rest_framework_simplejwt import tokens as _token
 #     return token
 
 
-
 class BaseService:
     model: Model
 
@@ -38,8 +37,6 @@ class BaseService:
             return cls.model.objects.get(pk=pk)
         except cls.model.DoesNotExist:
             raise NotFound
-    
-    
 
 
 class UserService(BaseService):

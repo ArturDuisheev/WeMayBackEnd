@@ -3,7 +3,7 @@ JAZZMIN_SETTINGS = {
     "site_header": "WeMay",
     "site_logo_classes": "img-circle",
     "site_brand": "Административная",
-    "welcome_sign":  " Добро пожаловать в WeMay",
+    "welcome_sign": "Добро пожаловать в WeMay",
     "copyright": "WeMay",
     "search_model": ["auth.User"],
     "show_ui_builder": True,

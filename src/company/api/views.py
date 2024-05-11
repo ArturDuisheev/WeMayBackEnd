@@ -68,7 +68,6 @@ class CompanyDetailAPIView(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = CompanySerializer
     permission_classes = [permissions.AllowAny]
 
-
     def patch(self, request, *args, **kwargs):
         company = self.get_object()
 

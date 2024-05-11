@@ -5,8 +5,8 @@ from django.test import TestCase
 
 a = 2
 
-b = 6 
+b = 6
 
-print('re', a+ b)
+print('re', a + b)
 
 res = a > b

@@ -1,8 +1,7 @@
-from django.shortcuts import get_object_or_404
 from rest_framework import serializers
 
 from company.models import WorkSchedule
-from promotion.models import Promotion, PromotionImage, PromotionCategory, Company, PromotionContact
+from promotion.models import Promotion, PromotionImage, PromotionCategory, PromotionContact
 from user.models import MyUser
 
 
@@ -35,7 +34,7 @@ class PromotionCategorySerializer(serializers.ModelSerializer):
         fields = ('title', 'images', 'icon', 'parent_category', 'count_category')
 
     def get_count_category(self, obj):
-        return Promotion.objects.only('category').count()
+        return obj.category.count()
 
 
 class PromotionSerializer(serializers.ModelSerializer):
@@ -43,9 +42,9 @@ class PromotionSerializer(serializers.ModelSerializer):
     company_name = serializers.CharField(source='company.name', read_only=True)
     category_name = serializers.CharField(source='category.name', read_only=True)
     end_date = serializers.DateTimeField(format='%Y-%m-%d T%H:%M:%S')
-    slide_image = serializers.FileField()
     images = PromotionImageSerializer(many=True, required=False, read_only=True)
     likes = serializers.PrimaryKeyRelatedField(queryset=MyUser.objects.all(), many=True, required=False)
+    favorites = serializers.PrimaryKeyRelatedField(queryset=MyUser.objects.all(), many=True, required=False)
     upload_images = serializers.ListField(
         child=serializers.ImageField(max_length=1000000, allow_empty_file=False, use_url=False),
         write_only=True
@@ -53,8 +52,8 @@ class PromotionSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Promotion
-        fields = ['id', 'title', 'description', 'company', 'company_name', 'category', 'category_name',
-                  'type', 'new_price', 'old_price', 'discount', 'likes', 'end_date', 'slide_image',
+        fields = ['id', 'title', 'slider_image', 'description', 'company', 'company_name', 'category', 'category_name',
+                  'type', 'new_price', 'old_price', 'discount', 'likes', 'favorites', 'end_date',
                   'instagram', 'facebook', 'whatsapp', 'website', 'is_daily', 'company_work_schedule', 'images',
                   'upload_images']
 
@@ -72,6 +71,7 @@ class PromotionSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         images_data = validated_data.pop('upload_images', [])
         likes_data = validated_data.pop('likes', None)
+        favorites_data = validated_data.pop('favorites', None)
         user = validated_data.get('user')
 
         if Promotion.objects.filter(user=user).exists():
@@ -84,6 +84,9 @@ class PromotionSerializer(serializers.ModelSerializer):
 
         if likes_data:
             promotion.likes.set(likes_data)
+
+        if favorites_data:
+            promotion.favorites.set(favorites_data)
 
         return promotion
 
