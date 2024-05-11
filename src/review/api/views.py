@@ -40,8 +40,6 @@ class ReviewCreateAPIVIew(generics.CreateAPIView):
             )
 
         data = self.request.data
-        data['author'] = user.id
-        data['promotion'] = self.kwargs.get('promotion_pk')
 
         serializer = self.get_serializer(data=data)
         serializer.is_valid(raise_exception=True)
