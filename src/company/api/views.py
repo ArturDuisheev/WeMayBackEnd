@@ -8,10 +8,6 @@ from .serializers import CompanySerializer, ContactSerializer
 from company.models import Company, Contact
 
 
-class HomepageAPIVIew(generics.ListAPIView):
-    def get(self, request, *args, **kwargs):
-        return render(self.request, 'homepage.html')
-
 
 class ContactCreateAPIView(generics.CreateAPIView):
     serializer_class = ContactSerializer

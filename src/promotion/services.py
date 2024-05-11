@@ -51,3 +51,4 @@ def get_favorite_count(promotion_id):
 
 def toggle_favorite_status(promotion_id, user):
     return toggle_status(promotion_id, user, 'favorites', 'Добавлено в избранные', 'Удалено из избранных')
+
