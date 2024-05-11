@@ -101,7 +101,7 @@ SOCIAL_AUTH_GOOGLE_OAUTH2_SCOPE = [
 ]
 
 DJOSER = {
-    'PASSWORD_RESET_CONFIRM_URL': 'auth/confirm?entity=password&token={token}&uid={uid}',
+    'PASSWORD_RESET_CONFIRM_URL': 'http://localhost:3000/confirm?entity=password&token=token&uid=uid',
     'USERNAME_RESET_CONFIRM_URL': '#/username/reset/confirm/{uid}/{token}',
     'ACTIVATION_URL': '#/activate/{uid}/token',
     'SEND_ACTIVATION_EMAIL': True,
@@ -202,8 +202,6 @@ SIMPLE_JWT = {
     "SLIDING_TOKEN_LIFETIME": timedelta(minutes=10),
     "SLIDING_TOKEN_REFRESH_LIFETIME": timedelta(days=1),
 
-    # "TOKEN_OBTAIN_SERIALIZER": "account.api.serializers.CustomTokenObtainPairSerializer",
-    # "TOKEN_REFRESH_SERIALIZER": "account.api.serializers.CustomTokenRefreshSerializer",
     "TOKEN_VERIFY_SERIALIZER": "rest_framework_simplejwt.serializers.TokenVerifySerializer",
     "TOKEN_BLACKLIST_SERIALIZER": "rest_framework_simplejwt.serializers.TokenBlacklistSerializer",
     "SLIDING_TOKEN_OBTAIN_SERIALIZER": "rest_framework_simplejwt.serializers.TokenObtainSlidingSerializer",

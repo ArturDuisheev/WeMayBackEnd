@@ -43,6 +43,7 @@ class PromotionSerializer(serializers.ModelSerializer):
     company_name = serializers.CharField(source='company.name', read_only=True)
     category_name = serializers.CharField(source='category.name', read_only=True)
     end_date = serializers.DateTimeField(format='%Y-%m-%d T%H:%M:%S')
+    slide_image = serializers.FileField()
     images = PromotionImageSerializer(many=True, required=False, read_only=True)
     likes = serializers.PrimaryKeyRelatedField(queryset=MyUser.objects.all(), many=True, required=False)
     upload_images = serializers.ListField(
@@ -52,8 +53,8 @@ class PromotionSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Promotion
-        fields = ['id', 'title', 'slider_image', 'description', 'company', 'company_name', 'category', 'category_name',
-                  'type', 'new_price', 'old_price', 'discount', 'likes', 'end_date',
+        fields = ['id', 'title', 'description', 'company', 'company_name', 'category', 'category_name',
+                  'type', 'new_price', 'old_price', 'discount', 'likes', 'end_date', 'slide_image',
                   'instagram', 'facebook', 'whatsapp', 'website', 'is_daily', 'company_work_schedule', 'images',
                   'upload_images']
 

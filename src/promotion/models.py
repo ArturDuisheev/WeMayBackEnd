@@ -1,4 +1,3 @@
-import datetime
 import os
 import shutil
 import tempfile
@@ -74,7 +73,7 @@ class Promotion(models.Model):
                                  verbose_name='Категория')
     company = models.ForeignKey(Company, on_delete=models.CASCADE, null=True, blank=True, verbose_name='Компания')
     title = models.CharField(max_length=100, verbose_name='Название')
-    slider_image = models.ImageField(upload_to='promotion/slides/%Y-%m-%d/', blank=True, null=True,
+    slider_image = models.ImageField(upload_to='promotion/slides/%Y-%m-%d/',
                                      verbose_name='Изображение для слайдера')
     old_price = models.PositiveIntegerField(null=True, verbose_name='Старая цена')
     new_price = models.PositiveIntegerField(verbose_name='Новая цена')
