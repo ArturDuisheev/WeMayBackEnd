@@ -6,6 +6,7 @@ from rest_framework.response import Response
 from promotion.paginations import CustomPagePagination
 from .serializers import CompanySerializer, ContactSerializer, WorkScheduleSerializer
 from company.models import Company, Contact, WorkSchedule
+from .permissions import IsAdminUserOrReadOnly
 
 
 
@@ -33,7 +34,7 @@ class ContactDetailAPIView(generics.RetrieveUpdateDestroyAPIView):
 
 class CompanyCreateAPIView(generics.CreateAPIView):
     serializer_class = CompanySerializer
-    permission_classes = [permissions.IsAdminUser]
+    permission_classes = [IsAdminUserOrReadOnly]
 
     def post(self, request, *args, **kwargs):
         data = self.request.data

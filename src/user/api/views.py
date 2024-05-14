@@ -2,6 +2,7 @@ from django.contrib.auth import logout
 from django.contrib.auth.hashers import make_password
 from django.http import HttpResponseRedirect
 from django.contrib.auth import authenticate, login
+from django.shortcuts import get_object_or_404
 
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
@@ -166,9 +167,10 @@ class GoogleOAuthAPIView(APIView):
 
 
 class UserProfileAPIView(generics.RetrieveUpdateAPIView):
-    queryset = MyUser.objects.all()
     serializer_class = CustomUserSerializer
-    permission_classes = [permissions.IsAuthenticated]
+
+    def get_object(self):
+        return get_object_or_404(MyUser, id=self.request.user.id)
 
     # def get_object(self):
     #     return self.request.user

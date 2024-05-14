@@ -18,14 +18,15 @@ class ReviewSerializer(serializers.ModelSerializer):
 
     def get_author(self, obj):
         request = self.context.get('request')
-        image = obj.author.image
+        author = obj.author
+        if author.image:
+            image_url = request.build_absolute_uri(author.image.url)
+        else:
+            image_url = None
         return {
-            'username': obj.author.username,
-            'image': request.build_absolute_uri(image)
+            'username': author.username,
+            'image': image_url
         }
-
-
-
 
     # def to_representation(self, instance):
     #     representation = super().to_representation(instance)

@@ -5,7 +5,7 @@ from .models import MyUser
 
 @admin.register(MyUser)
 class MyUserAdmin(UserAdmin):
-    list_display = ('username', 'fullname', 'email', 'image', 'is_active', 'is_staff', 'is_superuser')
+    list_display = ('email', 'image', 'is_active', 'is_staff', 'is_superuser')
     search_fields = ['username', 'fullname', 'email']
     list_filter = ['is_active', 'is_staff', 'is_superuser']
     fieldsets = (

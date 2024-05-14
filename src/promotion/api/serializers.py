@@ -49,13 +49,14 @@ class PromotionSerializer(serializers.ModelSerializer):
         child=serializers.ImageField(max_length=1000000, allow_empty_file=False, use_url=False),
         write_only=True
     )
+    promotion_contact = PromotionContactSerializer(read_only=True, many=True)
 
     class Meta:
         model = Promotion
         fields = ['id', 'title', 'slider_image', 'description', 'company', 'company_name', 'category', 'category_name',
                   'type', 'new_price', 'old_price', 'discount', 'likes', 'favorites', 'end_date',
                   'instagram', 'facebook', 'whatsapp', 'website', 'is_daily', 'company_work_schedule', 'images',
-                  'upload_images']
+                  'upload_images', 'promotion_contact']
 
     extra_kwargs = {
         'company': {'required': False}

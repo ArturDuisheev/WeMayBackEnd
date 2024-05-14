@@ -3,6 +3,7 @@ from rest_framework import generics, status, filters, permissions
 from rest_framework.views import APIView
 
 from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework.filters import OrderingFilter
 
 from promotion.models import PromotionCategory, Promotion, PromotionContact
 from promotion.paginations import CustomPagePagination
@@ -46,11 +47,12 @@ class PromotionListAPIView(generics.ListAPIView):
     serializer_class = PromotionSerializer
     permission_classes = [permissions.AllowAny]
     pagination_class = CustomPagePagination
-    filter_backends = [filters.SearchFilter, DjangoFilterBackend]
+    filter_backends = [filters.SearchFilter, DjangoFilterBackend, OrderingFilter]
     filterset_fields = ['title', 'description', 'type', 'address',
                         'category__title', 'type', 'discount', 'likes',
-                        'company__name']
-    lookup_field = 'pk'
+                        'company__name', 'is_daily']
+    ordering_fields = ['id', 'likes', 'new_price']
+    search_fields = ['title']
 
     def get_queryset(self):
         filter = self.kwargs.get('filter')
