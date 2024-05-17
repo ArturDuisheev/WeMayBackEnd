@@ -9,6 +9,10 @@ class Company(models.Model):
     image = models.ImageField(upload_to=company_image_path, verbose_name='Изображение')
     discounts = models.PositiveIntegerField(verbose_name='Скидки')
     description = models.TextField(verbose_name='Описание')
+    instagram = models.URLField(blank=True, null=True, verbose_name='Instagram')
+    facebook = models.URLField(blank=True, null=True, verbose_name='Facebook')
+    whatsapp = models.URLField(blank=True, null=True, verbose_name='WhatsApp')
+    website = models.URLField(blank=True, null=True, verbose_name='Веб-сайт')
 
     class Meta:
         db_table = 'company'

@@ -55,7 +55,7 @@ class PromotionSerializer(serializers.ModelSerializer):
         model = Promotion
         fields = ['id', 'title', 'slider_image', 'description', 'company', 'company_name', 'category', 'category_name',
                   'type', 'new_price', 'old_price', 'discount', 'likes', 'favorites', 'end_date',
-                  'instagram', 'facebook', 'whatsapp', 'website', 'is_daily', 'company_work_schedule', 'images',
+                  'is_daily', 'company_work_schedule', 'images',
                   'upload_images', 'promotion_contact']
 
     extra_kwargs = {

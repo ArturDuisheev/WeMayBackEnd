@@ -56,10 +56,6 @@ class Promotion(models.Model):
                                        verbose_name='Избранное')
     end_date = models.DateTimeField(verbose_name='Дата окончания')
     is_daily = models.BooleanField(default=False, verbose_name='Ежедневно')
-    instagram = models.URLField(blank=True, null=True, verbose_name='Instagram')
-    facebook = models.URLField(blank=True, null=True, verbose_name='Facebook')
-    whatsapp = models.URLField(blank=True, null=True, verbose_name='WhatsApp')
-    website = models.URLField(blank=True, null=True, verbose_name='Веб-сайт')
     user = models.OneToOneField(MyUser, on_delete=models.CASCADE, related_name='users', blank=True, null=True,
                                 verbose_name='Пользователь')
 
