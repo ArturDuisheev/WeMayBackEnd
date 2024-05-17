@@ -9,7 +9,7 @@ from promotion.models import PromotionCategory, Promotion, PromotionContact
 from promotion.paginations import CustomPagePagination
 from .serializers import PromotionCategorySerializer, PromotionSerializer, MyPromotionSerializer, \
     PromotionContactSerializer, PromotionHintSerializer
-from promotion.services import get_filtered_promotions, toggle_like_status, toggle_favorite_status, \
+from promotion.services import toggle_like_status, toggle_favorite_status, \
     get_count, get_like_count, get_favorite_count
 from promotion.api import permissons as pr_per
 from promotion.api import filters as custom_filter
@@ -22,10 +22,6 @@ class PromotionListAPIView(generics.ListAPIView):
     pagination_class = CustomPagePagination
     filter_backends = [filters.SearchFilter, DjangoFilterBackend]
     filterset_class = custom_filter.CustomPromotionFilter
-
-    def get_queryset(self):
-        filter = self.kwargs.get('filter')
-        return get_filtered_promotions(filter)
 
 
 class PromotionCreateAPIView(generics.CreateAPIView):
@@ -40,7 +36,6 @@ class PromotionDetailAPIView(generics.RetrieveDestroyAPIView):
     queryset = Promotion.objects.all()
     serializer_class = PromotionSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
-
 
 
 class FavoriteCounterView(APIView):
@@ -139,4 +134,22 @@ class UserFavoritePromotionsAPIView(generics.ListAPIView):
 class PromotionHintListAPIVIew(generics.ListAPIView):
     queryset = Promotion.objects.all().order_by('likes')
     serializer_class = PromotionHintSerializer
+    permission_classes = [permissions.AllowAny]
+
+
+class PromotionFreeAPIView(generics.ListAPIView):
+    queryset = Promotion.objects.all().filter(new_price=0)
+    serializer_class = PromotionSerializer
+    permission_classes = [permissions.AllowAny]
+
+
+class PromotionIsDailyAPIView(generics.ListAPIView):
+    queryset = Promotion.objects.all().filter(is_daily=True)
+    serializer_class = PromotionSerializer
+    permission_classes = [permissions.AllowAny]
+
+
+class PromotionEndDateAPIView(generics.ListAPIView):
+    queryset = Promotion.objects.all().filter(end_date__day=3)
+    serializer_class = PromotionSerializer
     permission_classes = [permissions.AllowAny]

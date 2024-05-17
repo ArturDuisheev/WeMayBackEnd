@@ -7,7 +7,6 @@ urlpatterns = [
     path('category/<int:pk>/', views.PromotionCategoryDetailAPIView.as_view(), name='category-detail'),
     path('contact/add/', views.PromotionContactCreateAPIView.as_view(), name='promotion-contact-create'),
     # Path filter (free, end_soon, daily, liked) are used to filter the objects by these fields
-    path('all/<str:filter>/', views.PromotionListAPIView.as_view(), name='promotion-filter'),
     path('all/', views.PromotionListAPIView.as_view(), name='promotion'),
     path('create/', views.PromotionCreateAPIView.as_view(), name='promotion-create'),
     path('<int:pk>/', views.PromotionDetailAPIView.as_view(), name='promotion-detail'),
@@ -18,4 +17,7 @@ urlpatterns = [
     path('likes/', views.UserLikePromotionsAPIView.as_view(), name='like-promotions'),
     path('favorites/', views.UserFavoritePromotionsAPIView.as_view(), name='favorite-promotions'),
     path('hint/', views.PromotionHintListAPIVIew.as_view(), name='promotion-hint'),
+    path('free/', views.PromotionFreeAPIView.as_view(), name='promotion-free'),
+    path('is_daily/', views.PromotionIsDailyAPIView.as_view(), name='promotion-is-daily'),
+    path('end_soon/', views.PromotionEndDateAPIView.as_view(), name='promotion-end-soon'),
 ]

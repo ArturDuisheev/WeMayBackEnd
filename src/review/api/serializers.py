@@ -1,39 +1,29 @@
 from rest_framework import serializers
+
+from core.env_reader import env
 from review.models import Review
 
 
 class ReviewSerializer(serializers.ModelSerializer):
     created_time = serializers.ReadOnlyField()
     author = serializers.SerializerMethodField('get_author')
-    likes = serializers.SerializerMethodField('get_likes')
+    promotion_pk = serializers.IntegerField(source='promotion.id')
 
     class Meta:
         model = Review
         fields = (
+            'id',
             'author',
             'promotion',
+            'promotion_pk',
             'body',
             'likes',
             'created_time'
         )
 
-    def get_likes(self, obj):
-        return obj.likes.count()
-
     def get_author(self, obj):
-        request = self.context.get('request')
-        author = obj.author
-        if author.image:
-            image_url = request.build_absolute_uri(author.image.url)
-        else:
-            image_url = None
+        base_url = env('BASE_URL')  #:TODO: тут костыль, поправавить(сорри я торопился)
         return {
-            'username': author.username,
-            'image': image_url
+            'username': obj.author.username,
+            'image': ''.join(base_url + obj.author.image.url)
         }
-
-    # def to_representation(self, instance):
-    #     representation = super().to_representation(instance)
-    #     representation['author_username'] = instance.author.username
-    #     representation['promotion_title'] = instance.promotion.title
-    #     return representation

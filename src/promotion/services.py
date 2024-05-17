@@ -1,19 +1,4 @@
-from datetime import date, timedelta
-from django.db.models import Count
 from .models import Promotion
-
-
-def get_filtered_promotions(request, filter=None):
-    queryset = Promotion.objects.annotate(Count('likes')).order_by('-likes__count')
-    filter_dict = {
-        'free': queryset.filter(new_price=0),
-        'daily': queryset.filter(is_daily=True),
-        'end_soon': queryset.filter(
-            end_date__lte=date.today() + timedelta(days=3),
-            end_date__gte=date.today()
-        ),
-    }
-    return filter_dict.get(filter) if filter in filter_dict else queryset
 
 
 def get_count(promotion_id, field):

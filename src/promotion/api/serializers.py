@@ -40,7 +40,7 @@ class PromotionCategorySerializer(serializers.ModelSerializer):
 class PromotionSerializer(serializers.ModelSerializer):
     company_work_schedule = serializers.SerializerMethodField(read_only=True)
     company_name = serializers.CharField(source='company.name', read_only=True)
-    category_name = serializers.CharField(source='category.name', read_only=True)
+    category_name = serializers.CharField(source='category.title', read_only=True)
     end_date = serializers.DateTimeField(format='%Y-%m-%d T%H:%M:%S')
     images = PromotionImageSerializer(many=True, required=False, read_only=True)
     likes = serializers.PrimaryKeyRelatedField(queryset=MyUser.objects.all(), many=True, required=False)

@@ -5,6 +5,8 @@ from rest_framework import generics, status, permissions, views, filters
 from promotion.paginations import CustomLimitOffsetPagination
 from review.models import Review
 from .serializers import ReviewSerializer
+from review.utils.limit_rate import limit_rate as ratelimit
+from review import services as rev_ser
 
 
 class ReviewListAPIVIew(generics.ListAPIView):
@@ -14,41 +16,30 @@ class ReviewListAPIVIew(generics.ListAPIView):
     filter_backends = [filters.SearchFilter, DjangoFilterBackend]
     filterset_fields = ['created_time']
     pagination_class = CustomLimitOffsetPagination
+    lookup_url_kwarg = 'promotion_pk'
 
     def get_queryset(self):
-        if self.kwargs.get('my'):
-            return self.queryset.filter(author=self.request.user)
-
-        if self.kwargs.get('promotion_pk'):
-            return self.queryset.filter(promotion=self.kwargs.get('promotion_pk'))
-        return self.queryset
+        promotion_pk = self.kwargs.get(self.lookup_url_kwarg)
+        queryset = super().get_queryset().filter(promotion_id=promotion_pk)
+        return queryset
 
 
 class ReviewCreateAPIVIew(generics.CreateAPIView):
+    queryset = Review.objects.all()
     serializer_class = ReviewSerializer
     permission_classes = [permissions.IsAuthenticated]
 
+    @ratelimit(num_requests=3, period=3600)
     def post(self, request, *args, **kwargs):
-        user = self.request.user
+        serializer = self.serializer_class(data=request.data)
 
-        if not user.username or user.username == '':
-            return Response(
-                {'message':
-                    'Вы не можете оставлять отзывы без \'username\'.'
-                    ' Пожалуйста заполните это поле'
-                 }, status=status.HTTP_400_BAD_REQUEST
-            )
+        if serializer.is_valid(raise_exception=True):
+            author = request.user
+            serializer.validated_data['author'] = author
+            serializer.save()
 
-        data = self.request.data
-
-        serializer = self.get_serializer(data=data)
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
-
-        return Response(
-            {'message': 'Отзыв успешно создан'},
-            status=status.HTTP_201_CREATED
-        )
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class ReviewDetailAPIView(generics.RetrieveUpdateDestroyAPIView):
@@ -92,76 +83,16 @@ class ReviewDetailAPIView(generics.RetrieveUpdateDestroyAPIView):
 class LikeCounterView(views.APIView):
     permission_classes = [permissions.IsAuthenticated]
 
-    def get(self, request, pk):
-        review = Review.objects.filter(pk=pk).first()
+    def get(self, request, *args, **kwargs):
+        review_id = kwargs.get('pk')
+        like_count = rev_ser.get_like_count(review_id)
+        if like_count is None:
+            return Response({'message': 'отзыв не найден'}, status=status.HTTP_404_NOT_FOUND)
+        return Response({'likes_count': like_count}, status=status.HTTP_200_OK)
 
-        if not review:
-            return Response(
-                {'message': 'Отзыв не найден'},
-                status=status.HTTP_404_NOT_FOUND
-            )
-
-        # Retrieve the count of likes for the specified review
-        Like = review.likes.through
-        like_count = Like.objects.count()
-
-        return Response(
-            {'count': like_count},
-            status=status.HTTP_200_OK
-        )
-
-    def post(self, request, pk):
-        user = self.request.user
-        review = Review.objects.filter(pk=pk).first()
-
-        if not review:
-            return Response(
-                {'message': 'Отзыв не найден'},
-                status=status.HTTP_404_NOT_FOUND
-            )
-
-        Like = review.likes.through
-        current_like = Like.objects.filter(myuser_id=user.id)
-
-        # Check if current user has already liked the review
-        if current_like.exists():
-            return Response(
-                {'message': 'Вы уже поставил лайк на этот отзыв'},
-                status=status.HTTP_400_BAD_REQUEST
-            )
-
-        current_like.create(review_id=review.id, myuser_id=user.id)
-        like_count = current_like.count()
-
-        return Response(
-            {'message': 'Добавлено в \'Понравившиися отзывы\'',
-             'count': like_count},
-            status=status.HTTP_201_CREATED
-        )
-
-    def delete(self, request, pk):
-        # Check if the user has already liked the review
-        user = self.request.user
-        review = Review.objects.filter(pk=pk).first()
-
-        if not review:
-            return Response(
-                {'message': 'Отзыв не найден'},
-                status=status.HTTP_404_NOT_FOUND
-            )
-
-        # Get the intermediate table and get the current user's like
-        Like = review.likes.through
-        current_like = Like.objects.filter(myuser_id=user.id)
-
-        if not current_like:
-            return Response(
-                {'message': 'Вы уже удалили лайк'},
-                status=status.HTTP_204_NO_CONTENT
-            )
-        current_like.delete()
-
-        return Response(
-            {'message': 'Лайк удален'},
-            status=status.HTTP_204_NO_CONTENT
-        )
+    def post(self, request, *args, **kwargs):
+        review_id = kwargs.get('pk')
+        success, message = rev_ser.toggle_like_status(review_id, request.user)
+        if not success:
+            return Response({'message': message}, status=status.HTTP_404_NOT_FOUND)
+        return Response({'message': message}, status=status.HTTP_201_CREATED)
