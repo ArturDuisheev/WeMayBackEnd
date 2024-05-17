@@ -1,9 +1,10 @@
+import datetime
+
 from rest_framework.response import Response
 from rest_framework import generics, status, filters, permissions
 from rest_framework.views import APIView
 
 from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework.filters import OrderingFilter
 
 from promotion.models import PromotionCategory, Promotion, PromotionContact
 from promotion.paginations import CustomPagePagination
@@ -150,6 +151,15 @@ class PromotionIsDailyAPIView(generics.ListAPIView):
 
 
 class PromotionEndDateAPIView(generics.ListAPIView):
-    queryset = Promotion.objects.all().filter(end_date__day=3)
+    queryset = Promotion.objects.all()
     serializer_class = PromotionSerializer
     permission_classes = [permissions.AllowAny]
+
+    def get_queryset(self):
+        from django.utils import timezone
+
+        today = timezone.now().date()
+        min_date = today + datetime.timedelta(days=1)
+        queryset = Promotion.objects.filter(end_date__lte=min_date)
+
+        return queryset
