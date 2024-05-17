@@ -158,8 +158,7 @@ class PromotionEndDateAPIView(generics.ListAPIView):
     def get_queryset(self):
         from django.utils import timezone
 
-        today = timezone.now().date()
-        min_date = today + datetime.timedelta(days=1)
-        queryset = Promotion.objects.filter(end_date__gte=min_date)
+        current_datetime = timezone.now()
+        queryset = Promotion.objects.filter(end_date__gte=current_datetime)
 
         return queryset
