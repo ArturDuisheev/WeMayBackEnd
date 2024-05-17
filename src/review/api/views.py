@@ -16,7 +16,7 @@ class ReviewListAPIVIew(generics.ListAPIView):
     filter_backends = [filters.SearchFilter, DjangoFilterBackend]
     filterset_fields = ['created_time']
     pagination_class = CustomLimitOffsetPagination
-    lookup_url_kwarg = 'promotion_pk'
+    lookup_url_kwarg = 'promotion'
 
     def get_queryset(self):
         promotion_pk = self.kwargs.get(self.lookup_url_kwarg)

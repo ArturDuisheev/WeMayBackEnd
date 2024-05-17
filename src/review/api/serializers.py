@@ -7,7 +7,6 @@ from review.models import Review
 class ReviewSerializer(serializers.ModelSerializer):
     created_time = serializers.ReadOnlyField()
     author = serializers.SerializerMethodField('get_author')
-    promotion_pk = serializers.IntegerField(source='promotion.id')
 
     class Meta:
         model = Review
@@ -15,7 +14,6 @@ class ReviewSerializer(serializers.ModelSerializer):
             'id',
             'author',
             'promotion',
-            'promotion_pk',
             'body',
             'likes',
             'created_time'
