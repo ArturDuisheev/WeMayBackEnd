@@ -20,8 +20,13 @@ class ReviewSerializer(serializers.ModelSerializer):
         )
 
     def get_author(self, obj):
-        base_url = env('BASE_URL')  #:TODO: тут костыль, поправавить(сорри я торопился)
+        base_url = env('BASE_URL')
+        image_url = None
+
+        if obj.author.image:
+            image_url = base_url + obj.author.image.url
+
         return {
             'username': obj.author.username,
-            'image': ''.join(base_url + obj.author.image.url)
+            'image': image_url
         }
