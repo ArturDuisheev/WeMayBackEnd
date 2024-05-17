@@ -48,7 +48,7 @@ class PromotionListAPIView(generics.ListAPIView):
     pagination_class = CustomPagePagination
     filter_backends = [filters.SearchFilter, DjangoFilterBackend]
     filterset_fields = ['title', 'description', 'type', 'address',
-                        'category__title', 'type', 'discount', 'likes',
+                        'category__title', 'type', 'discount', 'likes', 'is_daily',
                         'company__name']
     lookup_field = 'pk'
 
