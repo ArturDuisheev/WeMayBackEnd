@@ -160,6 +160,6 @@ class PromotionEndDateAPIView(generics.ListAPIView):
 
         today = timezone.now().date()
         min_date = today + datetime.timedelta(days=1)
-        queryset = Promotion.objects.filter(end_date__lte=min_date)
+        queryset = Promotion.objects.filter(end_date__gte=min_date)
 
         return queryset
