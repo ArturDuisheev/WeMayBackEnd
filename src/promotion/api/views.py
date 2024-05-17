@@ -11,20 +11,20 @@ from .serializers import PromotionCategorySerializer, PromotionSerializer, MyPro
 from promotion.services import get_filtered_promotions, toggle_like_status, toggle_favorite_status, \
     get_count, get_like_count, get_favorite_count
 from promotion.api import permissons as pr_per
+from promotion.api import filters as custom_filter
 
 
 class PromotionListAPIView(generics.ListAPIView):
+    queryset = Promotion.objects.all()
     serializer_class = PromotionSerializer
     permission_classes = [permissions.AllowAny]
     pagination_class = CustomPagePagination
     filter_backends = [filters.SearchFilter, DjangoFilterBackend]
-    filterset_fields = ['title', 'description', 'type', 'address',
-                        'category__title', 'type', 'discount', 'likes',
-                        'company__name']
+    filterset_class = custom_filter.CustomPromotionFilter
 
-    def get_queryset(self):
-        filter = self.kwargs.get('filter')
-        return get_filtered_promotions(filter)
+    # def get_queryset(self):
+    #     filter = self.kwargs.get('filter')
+    #     return get_filtered_promotions(filter)
 
 
 class PromotionCreateAPIView(generics.CreateAPIView):
@@ -40,21 +40,6 @@ class PromotionDetailAPIView(generics.RetrieveDestroyAPIView):
     serializer_class = PromotionSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 
-
-class PromotionListAPIView(generics.ListAPIView):
-    queryset = Promotion.objects.all()
-    serializer_class = PromotionSerializer
-    permission_classes = [permissions.AllowAny]
-    pagination_class = CustomPagePagination
-    filter_backends = [filters.SearchFilter, DjangoFilterBackend]
-    filterset_fields = ['title', 'description', 'type', 'address',
-                        'category__title', 'type', 'discount', 'likes', 'is_daily',
-                        'company__name']
-    lookup_field = 'pk'
-
-    def get_queryset(self):
-        filter = self.kwargs.get('filter')
-        return get_filtered_promotions(filter)
 
 
 class FavoriteCounterView(APIView):
