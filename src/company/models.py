@@ -36,7 +36,7 @@ class Contact(models.Model):
     def __str__(self):
         return f'Контакт {self.title}'
 
-
+#f
 class WorkSchedule(models.Model):
     company = models.OneToOneField(Company, on_delete=models.CASCADE, related_name='work_schedule',
                                    verbose_name='Компания')
