@@ -3,6 +3,7 @@ from rest_framework import generics, status, filters, permissions
 from rest_framework.views import APIView
 
 from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework.filters import OrderingFilter
 
 from promotion.models import PromotionCategory, Promotion, PromotionContact
 from promotion.paginations import CustomPagePagination
@@ -22,9 +23,9 @@ class PromotionListAPIView(generics.ListAPIView):
     filter_backends = [filters.SearchFilter, DjangoFilterBackend]
     filterset_class = custom_filter.CustomPromotionFilter
 
-    # def get_queryset(self):
-    #     filter = self.kwargs.get('filter')
-    #     return get_filtered_promotions(filter)
+    def get_queryset(self):
+        filter = self.kwargs.get('filter')
+        return get_filtered_promotions(filter)
 
 
 class PromotionCreateAPIView(generics.CreateAPIView):

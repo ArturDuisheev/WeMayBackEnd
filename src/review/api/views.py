@@ -2,7 +2,7 @@ from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.response import Response
 from rest_framework import generics, status, permissions, views, filters
 
-from promotion.paginations import CustomPagePagination
+from promotion.paginations import CustomLimitOffsetPagination
 from review.models import Review
 from .serializers import ReviewSerializer
 
@@ -13,7 +13,7 @@ class ReviewListAPIVIew(generics.ListAPIView):
     permission_classes = [permissions.AllowAny]
     filter_backends = [filters.SearchFilter, DjangoFilterBackend]
     filterset_fields = ['created_time']
-    pagination_class = CustomPagePagination
+    pagination_class = CustomLimitOffsetPagination
 
     def get_queryset(self):
         if self.kwargs.get('my'):
