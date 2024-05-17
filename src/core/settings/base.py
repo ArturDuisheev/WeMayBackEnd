@@ -100,7 +100,7 @@ SOCIAL_AUTH_GOOGLE_OAUTH2_SCOPE = [
 ]
 
 DJOSER = {
-    'PASSWORD_RESET_CONFIRM_URL': 'http://localhost:3000/confirm?entity=password&token=token&uid=uid',
+    'PASSWORD_RESET_CONFIRM_URL': 'http://localhost:3000/password/reset/confirm/{uid}/{token}',
     'USERNAME_RESET_CONFIRM_URL': '#/username/reset/confirm/{uid}/{token}',
     'ACTIVATION_URL': '#/activate/{uid}/token',
     'SEND_ACTIVATION_EMAIL': True,
