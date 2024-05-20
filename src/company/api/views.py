@@ -34,7 +34,7 @@ class ContactDetailAPIView(generics.RetrieveUpdateDestroyAPIView):
 
 class CompanyCreateAPIView(generics.CreateAPIView):
     serializer_class = CompanySerializer
-    permission_classes = [IsAdminUserOrReadOnly]
+    permission_classes = [permissions.IsAuthenticated]
 
     def post(self, request, *args, **kwargs):
         data = self.request.data

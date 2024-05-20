@@ -1,12 +1,11 @@
 from django.db import models
-from company.utils.utils import company_image_path
 from user.models import MyUser
 
 
 class Company(models.Model):
     owner = models.ForeignKey(MyUser, on_delete=models.CASCADE, related_name='owner', verbose_name='Владелец')
     name = models.CharField(max_length=100, unique=True, verbose_name='Название')
-    image = models.ImageField(upload_to=company_image_path, verbose_name='Изображение')
+    image = models.ImageField(upload_to='images/company/', verbose_name='Изображение')
     discounts = models.PositiveIntegerField(verbose_name='Скидки')
     description = models.TextField(verbose_name='Описание')
     instagram = models.URLField(blank=True, null=True, verbose_name='Instagram', db_column='insta_company')
@@ -35,6 +34,7 @@ class Contact(models.Model):
 
     def __str__(self):
         return f'Контакт {self.title}'
+
 
 #f
 class WorkSchedule(models.Model):

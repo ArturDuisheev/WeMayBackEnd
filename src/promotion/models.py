@@ -60,8 +60,8 @@ class Promotion(models.Model):
     facebook = models.URLField(blank=True, null=True, verbose_name='Facebook')
     whatsapp = models.URLField(blank=True, null=True, verbose_name='WhatsApp')
     website = models.URLField(blank=True, null=True, verbose_name='Веб-сайт')
-    user = models.OneToOneField(MyUser, on_delete=models.CASCADE, related_name='users', blank=True, null=True,
-                                verbose_name='Пользователь')
+    user = models.ForeignKey(MyUser, related_name='users', blank=True, null=True,
+                                verbose_name='Пользователь', on_delete=models.CASCADE)
 
     def __str__(self):
         if self.category:

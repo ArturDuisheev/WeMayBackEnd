@@ -27,11 +27,10 @@ class PromotionImageSerializer(serializers.ModelSerializer):
 
 class PromotionCategorySerializer(serializers.ModelSerializer):
     count_category = serializers.SerializerMethodField('get_count_category')
-    images = PromotionImageSerializer(many=True, required=False, read_only=True)
 
     class Meta:
         model = PromotionCategory
-        fields = ('title', 'images', 'icon', 'parent_category', 'count_category')
+        fields = ('title', 'image', 'icon', 'parent_category', 'count_category')
 
     def get_count_category(self, obj):
         return obj.category.count()
