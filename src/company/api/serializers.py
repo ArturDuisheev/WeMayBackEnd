@@ -5,6 +5,7 @@ from promotion.models import Promotion
 
 class CompanySerializer(serializers.ModelSerializer):
     promotions_count = serializers.SerializerMethodField()
+    page_size = serializers.IntegerField(default=6)
 
     class Meta:
         model = Company
