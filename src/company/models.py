@@ -9,6 +9,7 @@ class Company(models.Model):
     name = models.CharField(max_length=100, unique=True, verbose_name='Название')
     image = models.ImageField(upload_to='images/company/', verbose_name='Изображение')
     discounts = models.PositiveIntegerField(verbose_name='Скидки')
+    category = models.ForeignKey('promotion.PromotionCategory', on_delete=models.CASCADE, related_name='category_of_company', verbose_name='категория компании')
     description = models.TextField(verbose_name='Описание')
     instagram = models.URLField(blank=True, null=True, verbose_name='Instagram', db_column='insta_company')
     facebook = models.URLField(blank=True, null=True, verbose_name='Facebook', db_column='facebook_company')
