@@ -11,7 +11,6 @@ class CustomLimitOffsetPagination(LimitOffsetPagination):
 
 
 class CustomPagePagination(PageNumberPagination):
-    # Default page size
     page_size = 6
     page_size_query_param = 'page_size'
 
