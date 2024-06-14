@@ -1,13 +1,12 @@
 from django.shortcuts import render
 from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework import generics, permissions, filters, status
+from rest_framework import generics, permissions, filters, status, pagination
 from rest_framework.response import Response
 
-from promotion.paginations import CustomPagePagination
+from promotion.paginations import CustomLimitOffsetPagination
 from .serializers import CompanySerializer, ContactSerializer, WorkScheduleSerializer
 from company.models import Company, Contact, WorkSchedule
 from .permissions import IsAdminUserOrReadOnly
-
 
 
 class ContactCreateAPIView(generics.CreateAPIView):
@@ -54,7 +53,7 @@ class CompanyListAPIView(generics.ListAPIView):
     permission_classes = [permissions.AllowAny]
     filter_backends = [filters.SearchFilter, DjangoFilterBackend]
     filterset_fields = ['name', 'discounts', 'description', 'owner']
-    pagination_class = CustomPagePagination
+    pagination_class = CustomLimitOffsetPagination
 
     def get_queryset(self):
         return Company.objects.filter(owner=self.request.user) if self.kwargs.get('my') else Company.objects.all()

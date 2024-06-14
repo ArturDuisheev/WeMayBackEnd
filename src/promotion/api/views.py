@@ -22,6 +22,7 @@ class PromotionListAPIView(generics.ListAPIView):
     permission_classes = [permissions.AllowAny]
     pagination_class = CustomPagePagination
     filter_backends = [filters.SearchFilter, DjangoFilterBackend]
+    search_fields = ('title', 'description')
     filterset_class = custom_filter.CustomPromotionFilter
 
 
