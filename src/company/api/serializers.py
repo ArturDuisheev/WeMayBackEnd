@@ -5,6 +5,7 @@ from promotion.models import Promotion
 
 class CompanySerializer(serializers.ModelSerializer):
     promotions_count = serializers.SerializerMethodField()
+    category = serializers.SerializerMethodField(method_name='get_category_name')
 
     class Meta:
         model = Company
@@ -12,6 +13,9 @@ class CompanySerializer(serializers.ModelSerializer):
 
     def get_promotions_count(self, obj):
         return Promotion.objects.filter(company=obj).count()
+
+    def get_category_name(self, obj):
+        return obj.category.title
 
     def to_representation(self, instance):
         representation = super().to_representation(instance)
