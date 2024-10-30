@@ -1,5 +1,6 @@
 import datetime
 
+import django_filters
 from rest_framework.response import Response
 from rest_framework import generics, status, filters, permissions
 from rest_framework.views import APIView
@@ -107,11 +108,14 @@ class MyPromotionList(generics.ListAPIView):
     serializer_class = MyPromotionSerializer
     permission_classes = [pr_per.IsOwnerOrReadOnly]
 
+    def get_queryset(self):
+        return Promotion.objects.filter(user=self.request.user)
+
 
 class MyPromotionDelete(generics.DestroyAPIView):
     queryset = Promotion.objects.all()
     serializer_class = MyPromotionSerializer
-    permission_classes = [permissions.AllowAny]
+    permission_classes = [pr_per.IsOwnerOrReadOnly]
     lookup_field = 'pk'
 
 
@@ -151,15 +155,30 @@ class PromotionIsDailyAPIView(generics.ListAPIView):
     permission_classes = [permissions.AllowAny]
 
 
+from django.utils import timezone
+from datetime import timedelta
+import django_filters
+
+
+class PromotionFilter(django_filters.FilterSet):
+    end_date = django_filters.BooleanFilter(method='filter_ending_soon')
+
+    class Meta:
+        model = Promotion
+        fields = ['end_date']
+
+    def filter_ending_soon(self, queryset, name, value):
+        current_datetime = timezone.now()
+        one_day_later = current_datetime + timedelta(days=1)
+
+        if value:
+            return queryset.filter(end_date__gte=current_datetime, end_date__lt=one_day_later)
+        return queryset
+
+
 class PromotionEndDateAPIView(generics.ListAPIView):
     queryset = Promotion.objects.all()
     serializer_class = PromotionSerializer
     permission_classes = [permissions.AllowAny]
-
-    def get_queryset(self):
-        from django.utils import timezone
-
-        current_datetime = timezone.now()
-        queryset = Promotion.objects.filter(end_date__gte=current_datetime)
-
-        return queryset
+    filter_backends = [DjangoFilterBackend]
+    filterset_class = PromotionFilter
