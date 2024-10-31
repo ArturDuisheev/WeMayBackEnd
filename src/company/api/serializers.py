@@ -15,7 +15,7 @@ class CompanySerializer(serializers.ModelSerializer):
         return Promotion.objects.filter(company=obj).count()
 
     def get_category_name(self, obj):
-        return obj.category.title
+        return obj.category.title if None else None
 
     def to_representation(self, instance):
         representation = super().to_representation(instance)
